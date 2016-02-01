@@ -7,7 +7,6 @@
     <meta keywords = "travel, tourism, adventure, backpacking, backpacker">
     {% load staticfiles %}
     <!-- <link rel="shortcut icon" href="images/favicon.ico" /> -->
-    <link href='https://fonts.googleapis.com/css?family=Roboto:500' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="{% static "assets/css/font-awesome.min.css" %}">
     <link rel="stylesheet" href="{% static "assets/css/bootstrap.min.css"%}">
     <script type="text/javascript" src="{% static "assets/js/jquery-2.2.0.min.js" %}"></script>
@@ -16,31 +15,32 @@
 
     <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
 		<link rel="stylesheet" href="{% static "assets/css/main.css"%}" />
+    <link rel="stylesheet" href="{% static "assets/css/materialize.min.css"%}" />
     <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
 	</head>
 	<body>
-
-      <header id="header" align="center" style="font-family: 'Roboto', sans-serif;">
+      <div id= "content">
+      <header id="header" align="center">
         <h1>How much money do you have?</h1>
       </header>
 
 
 
         <!-- Signup Form -->
-      <form id="signup-form" method="post" action="#" style="width: 300px; margin: 0 auto;">
+      <form id="signup-form" method="post" action="/check/" style="width: 300px; margin: 0 auto;">
         {% csrf_token%}
-        <input type="text" name="money" id="money" placeholder="" required onclick="getLocation();" onfocus="stop()" />
-        <input type="submit" value="&#9992;"  />
-        <input type="hidden" name="location" id="location"/>
+        <input type="text" name="money" id="money" placeholder="" required onclick="getLocation();" />
+        <input type="submit" value="&#9992;"  onclick="loader();" />
+        <input type="hidden" name="location" id="location" />
       </form>
 
       <header id="header_2" align="center" style="font-family: 'Roboto', sans-serif;">
         <br>
-        <h3>We'll tell you where to go!</h3>
+        <h5>We'll tell you where to go!</h5>
       </header>
-
-		<!-- Footer -->
+      </div>
+    <!-- Footer -->
 <!-- 			<footer id="footer">
 				<ul class="icons">
 					<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
@@ -59,17 +59,16 @@
       <script>
       $(function(){
           $("#money").typed({
-            strings: ["1000 Dollars", "10000 Rupees", "1000 Pounds", "5000 Dollars", "15000 Dollars", "25000 Dollars"],
-            typeSpeed: 0.5,
-            loop: true,
-            showCursor: true,
-            cursorChar: "|"
+            strings: ["1000 USD", "50000 INR"],
+            typeSpeed: 0,
           });
       });
     </script>
     <script>
       var x = document.getElementById("location");
       function getLocation() {
+          document.getElementById("money").value='';
+          document.getElementById("money").placeholder='';
           if (navigator.geolocation) {
               navigator.geolocation.getCurrentPosition(showPosition);
           } else {
@@ -80,8 +79,14 @@
           x.value = position.coords.latitude + "," +  position.coords.longitude;
       }
     </script>
-
 	</body>
+  <script>
+  function loader(){
+    jQuery("#content").html('<h4 align="center">Awesomeness coming right up</h4><div class="progress"><div class="indeterminate"></div></div><h4 id="quotes" align="center"></h4>');
+      $.getScript("static/assets/js/test.js", function(){
+      });
+  }
+  </script>
 </html>
 
 

@@ -19,7 +19,7 @@
     <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
 	</head>
-	<body>
+	<body onload="getLocation()">
       <div id= "content">
       <header id="header" align="center">
         <h1>How much money do you have?</h1>
@@ -30,7 +30,7 @@
         <!-- Signup Form -->
       <form id="signup-form" method="post" action="/check/" style="width: 300px; margin: 0 auto;">
         {% csrf_token%}
-        <input type="text" name="money" id="money" placeholder="" required onclick="getLocation();" />
+        <input type="text" name="money" id="money" placeholder="" required" />
         <input type="submit" value="&#9992;"  onclick="loader();" />
         <input type="hidden" name="location" id="location" />
       </form>

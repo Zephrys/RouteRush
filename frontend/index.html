@@ -1,20 +1,21 @@
-<!DOCTYPE HTML>
+  <!DOCTYPE HTML>
 <html>
 	<head>
 		<title>Go Where Me</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <meta keywords = "travel, tourism, adventure, backpacking, backpacker">
+    {% load staticfiles %}
     <!-- <link rel="shortcut icon" href="images/favicon.ico" /> -->
     <link href='https://fonts.googleapis.com/css?family=Roboto:500' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <script type="text/javascript" src="assets/js/jquery-2.2.0.min.js"></script>
-    <script type="text/javascript" src="assets/js/typed.js"></script>
-    <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="{% static "assets/css/font-awesome.min.css" %}">
+    <link rel="stylesheet" href="{% static "assets/css/bootstrap.min.css"%}">
+    <script type="text/javascript" src="{% static "assets/js/jquery-2.2.0.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "assets/js/typed.js"%}"></script>
+    <script type="text/javascript" src="{% static "assets/js/bootstrap.min.js"%}"></script>
 
     <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
-		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="stylesheet" href="{% static "assets/css/main.css"%}" />
     <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
 	</head>
@@ -28,8 +29,10 @@
 
         <!-- Signup Form -->
       <form id="signup-form" method="post" action="#" style="width: 300px; margin: 0 auto;">
-        <input type="text" name="money" id="money" placeholder=""/>
-        <input type="submit" value="&#9992;"/>
+        {% csrf_token%}
+        <input type="text" name="money" id="money" placeholder="" required onclick="getLocation();" onfocus="stop()" />
+        <input type="submit" value="&#9992;"  />
+        <input type="hidden" name="location" id="location"/>
       </form>
 
       <header id="header_2" align="center" style="font-family: 'Roboto', sans-serif;">
@@ -52,7 +55,7 @@
  -->
 		<!-- Scripts -->
 			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
-			<script src="assets/js/main.js"></script>
+			<script src="{% static "assets/js/main.js" %}"></script>
       <script>
       $(function(){
           $("#money").typed({
@@ -64,5 +67,21 @@
           });
       });
     </script>
+    <script>
+      var x = document.getElementById("location");
+      function getLocation() {
+          if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(showPosition);
+          } else {
+              x.value = "Geolocation is not supported by this browser.";
+          }
+      }
+      function showPosition(position) {
+          x.value = position.coords.latitude + "," +  position.coords.longitude;
+      }
+    </script>
+
 	</body>
 </html>
+
+

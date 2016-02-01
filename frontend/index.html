@@ -1,66 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Go Where Me</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta keywords = "travel, tourism, adventure, backpacking, backpacker">
+    <!-- <link rel="shortcut icon" href="images/favicon.ico" /> -->
+    <link href='https://fonts.googleapis.com/css?family=Roboto:500' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <script type="text/javascript" src="assets/js/jquery-2.2.0.min.js"></script>
+    <script type="text/javascript" src="assets/js/typed.js"></script>
+    <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+
+    <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="assets/css/main.css" />
+    <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+	</head>
+	<body>
+
+      <header id="header" align="center" style="font-family: 'Roboto', sans-serif;">
+        <h1>How much money do you have?</h1>
+      </header>
 
 
 
-<!-- Carousel
-================================================== -->
-<div id="myCarousel" class="carousel slide">
-  <!-- Indicators -->
-  <ol class="carousel-indicators">
-    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-    <li data-target="#myCarousel" data-slide-to="1"></li>
-    <li data-target="#myCarousel" data-slide-to="2"></li>
-  </ol>
-  <div class="carousel-inner">
-    <div class="item active">
-      <img src="/assets/example/bg_suburb.jpg">
-      <div class="container">
-        <div class="carousel-caption">
-        </div>
-      </div>
-    </div>
-    <div class="item">
-      <img src="http://lorempixel.com/1500/800/abstract/1">
-      <div class="container">
-        <div class="carousel-caption">
+        <!-- Signup Form -->
+      <form id="signup-form" method="post" action="#" style="width: 300px; margin: 0 auto;">
+        <input type="text" name="money" id="money" placeholder=""/>
+        <input type="submit" value="&#9992;"/>
+      </form>
 
-        </div>
-      </div>
-    </div>
-    <div class="item">
-      <img src="http://lorempixel.com/1500/800/abstract/2">
-      <div class="container">
-        <div class="carousel-caption">
+      <header id="header_2" align="center" style="font-family: 'Roboto', sans-serif;">
+        <br>
+        <h3>We'll tell you where to go!</h3>
+      </header>
 
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <form class="col-sm-12" id="searchForm">
-    <div class="form-group col-sm-4 col-sm-offset-4">
-      <div class="input-group input-group-lg center-block">
-        <input type="text" class="form-control" placeholder="Search">
-        <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
-      </div>
-    </div>
-  </form>
-
-  <!-- Controls -->
-  <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-    <i class="glyphicon glyphicon-chevron-left"></i>
-  </a>
-  <a class="right carousel-control" href="#myCarousel" data-slide="next">
-    <i class="glyphicon glyphicon-chevron-right"></i>
-  </a>
-</div>
-<!-- /.carousel -->
-
-<div class="container">
-
-  <!-- FOOTER -->
-  <footer>
-    <p class="pull-right"><a href="#">Back to top</a></p>
-    <p>This Bootstrap layout is compliments of Bootply. · <a href="http://www.bootply.com/108847">Edit on Bootply.com</a></p>
-  </footer>
-
-</div><!-- /.container -->
+		<!-- Footer -->
+<!-- 			<footer id="footer">
+				<ul class="icons">
+					<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+					<li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
+					<li><a href="#" class="icon fa-github"><span class="label">GitHub</span></a></li>
+					<li><a href="#" class="icon fa-envelope-o"><span class="label">Email</span></a></li>
+				</ul>
+				<ul class="copyright">
+					<li>&copy; Untitled.</li><li>Credits: <a href="http://html5up.net">HTML5 UP</a></li>
+				</ul>
+			</footer>
+ -->
+		<!-- Scripts -->
+			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+			<script src="assets/js/main.js"></script>
+      <script>
+      $(function(){
+          $("#money").typed({
+            strings: ["1000 Dollars", "10000 Rupees", "1000 Pounds", "5000 Dollars", "15000 Dollars", "25000 Dollars"],
+            typeSpeed: 0.5,
+            loop: true,
+            showCursor: true,
+            cursorChar: "|"
+          });
+      });
+    </script>
+	</body>
+</html>

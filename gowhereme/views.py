@@ -9,6 +9,15 @@ import json
 from geopy.geocoders import Nominatim
 from geopy.distance import vincenty
 
+from pprint import pprint
+
+from scripts.get_city import get_price_city
+from places_to_visit import places_to_visit
+
+from pygeocoder import Geocoder
+
+>>>>>>> some algo to compute where to go
+
 def home(request):
     return render(request, "index.html", {})
 
@@ -57,6 +66,30 @@ def getNearestAirport(lat, lon):
 	return nearest_airport
 
 def check(request):
-	if request.method == 'POST':
-		print request.POST
-	return HttpResponseRedirect('/')
+    if request.method == "POST":
+        price = request.POST['money']
+        location = request.POST['location']
+
+        print request.POST
+
+        lat, longi = [float(x.encode('ascii', 'ignore').strip()) for x in location.split(',')]
+        location = Geocoder.reverse_geocode(lat, longi)
+        (city, country) = location.city, location.country
+
+        list_places = places_to_visit(location, price)
+
+        pprint(list_places)
+
+        final_list = []
+        for place in list_places:
+            if get_price_city(place) < (0.6 * price):
+                print "going to " + place " + now! :D"
+                price -= get_pleasure_price(place)
+
+                final_list.append(roam_nearby_places(place, price))
+                continue
+
+        # print/ show the final_list
+        return render(request, "index.html", {})
+    else:
+        return HttpResponseRedirect('/')

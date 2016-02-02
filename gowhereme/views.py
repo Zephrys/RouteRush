@@ -11,8 +11,8 @@ from geopy.distance import vincenty
 
 from pprint import pprint
 
-from scripts.get_city import get_price_city
-from places_to_visit import places_to_visit
+# from scripts.get_city import get_price_city
+from places_to_visit import places_to_visit, go_nearby
 
 from pygeocoder import Geocoder
 
@@ -21,104 +21,108 @@ def home(request):
     return render(request, "index.html", {})
 
 
-api_key='AIzaSyBYNhvCYTT7iIZNKavmTf9lplS57WQeCJw'
-def getDays(city,country, budget):
-	citycostson = json.loads(open('city_price.json').read())
-	geolocator = Nominatim()
-	location = geolocator.geocode(city)
-	url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=%s&location=%s,%s&radius=3000'%(api_key,location.latitude,location.longitude)
-	response = requests.get(url)
-	allowed = ["point_of_interest", "establishment", "natural_feature", "museum", "amusement_park", "aquarium", "church", "hindu_temple", "mosque", "casino", "city_hall", "place_of_worship", "synagogue", "shopping_mall"]
-	places = []
-	if response.status ==200:
-		data = response.json()
-		data = data["results"]
-		for location in data:
-			if "point_of_interest" not in data["types"]:
-				continue
-			else:
-				flag = True
-				for x in data["types"]:
-					if x not in allowed:
-						flag = False
-				if not Flag:
-					continue
-				else:
-					if location.has_key["photos"]:
-						location["image"] = getPhoto(location["photos"]["photo_reference"])
-						places.append(location)
-
-	days = 0
-	number_of_places = len(places)
-	while 1:
-		if budget - citycostson[country][city] < 0:
-			break
-		days = days + 1
-		number_of_places = number_of_places - 4
-		if number_of_places < 0:
-			break
-		budget = budget - citycostson[country][city]
-
-	return days, places[:days*4], budget, citycostson[country][city]
-
 def getPhoto(reference):
-	url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s" %(reference,api_key)
-	response = requests.get(url).url
-	return response
+    url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s" % (reference,
+                                                                                                      api_key)
+    response = requests.get(url).url
+    return response
+
+
+api_key = 'AIzaSyBYNhvCYTT7iIZNKavmTf9lplS57WQeCJw'
+
+geolocator = Nominatim()
+
+
+def getDays(city, budget):
+    location = geolocator.geocode(city)
+
+    url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=%s&location=%s,%s&radius=3000'
+    url = url % (api_key, location.latitude, location.longitude)
+
+    response = requests.get(url)
+    allowed = ["point_of_interest", "establishment", "natural_feature", "museum", "amusement_park", "aquarium",
+               "church", "hindu_temple", "mosque", "casino", "city_hall", "place_of_worship", "synagogue",
+               "shopping_mall"]
+    places = []
+    if response.status == 200:
+        data = response.json()
+        data = data["results"]
+        for location in data:
+            if "point_of_interest" not in data["types"]:
+                continue
+            else:
+                flag = True
+                for x in data["types"]:
+                    if x not in allowed:
+                        flag = False
+                if not Flag:
+                    continue
+                else:
+                    places.append(location)
+
+    days = len(places) / 4
+    if len(places) % 4 > 2:
+        days += 1
+
+    return days, places
+
 
 def getNearestAirport(lat, lon):
-	airson = json.loads(open('airports.json').read())
-	nearest_airport = None
-	nearest_measure = 320000
-	for airport in airson:
-		if not airport.has_key('lat') and not airport.has_key('lon') or (airport.has_key('size') and airport['size']!='large'):
-			continue
-		distance = vincenty((lat,lon),(airport['lat'],airport['lon']))
-		if distance < nearest_measure:
-			nearest_measure = distance
-			nearest_airport = airport
-	return nearest_airport
+    airson = json.loads(open('airports.json').read())
+    nearest_airport = None
+    nearest_measure = 320000
+    for airport in airson:
+        if not airport.has_key('lat') and not airport.has_key('lon') or (airport.has_key('size') and airport['size'] != 'large'):
+            continue
+        distance = vincenty((lat, lon), (airport['lat'], airport['lon']))
+        if distance < nearest_measure:
+            nearest_measure = distance
+            nearest_airport = airport
 
-def getNextCity(lat, lon, country, visited_cities,sameCountry=True):
-	cityson = json.loads(open('city_geo.json').read())
-	citycostson = json.loads(open('city_price.json').read())
-	nearest_city = None
-	nearest_measure = 320000
-	country_changed = False
-	if sameCountry:
-		for city_temp in cityson[country]:
-			if not(citycostson.has_key[country] and citycostson[country].has_key[city_temp]) or city_temp in visited_cities:
-				continue
-			city = cityson[country][city_temp]
-			distance = vincenty((lat,lon), (city['lan'],city['lon']))
-			if distance < nearest_measure:
-				nearest_measure = distance
-				nearest_city = city
-	if not nearest_city:
-		nearest_city = None
-		nearest_measure = 320000
-		for country_temp in  cityson:
-			if country == country_temp:
-				continue
-			for city_temp in cityson[country_temp]:
-				if not(citycostson.has_key[country] and citycostson[country].has_key[city_temp]) or city_temp in visited_cities:
-					continue
-				city = cityson[country][city_temp]
-				distance = vincenty((lat,lon), (city['lan'],city['lon']))
-				if distance < nearest_measure:
-					nearest_measure = distance
-					nearest_city = city
-					country_changed = country_temp
-	return nearest_city, country_temp
+    return nearest_airport
+
+
+def getNextCity(lat, lon, country, visited_cities, sameCountry=True):
+    cityson = json.loads(open('city_geo.json').read())
+    citycostson = json.loads(open('city_price.json').read())
+    nearest_city = None
+    nearest_measure = 320000
+    country_changed = False
+    if sameCountry:
+        for city_temp in cityson[country]:
+            if not (citycostson.has_key[country] and citycostson[country].has_key[city_temp]) or city_temp in visited_cities:
+                continue
+            city = cityson[country][city_temp]
+            distance = vincenty((lat, lon), (city['lan'], city['lon']))
+            if distance < nearest_measure:
+                nearest_measure = distance
+                nearest_city = city
+    if not nearest_city:
+        nearest_city = None
+        nearest_measure = 320000
+        for country_temp in cityson:
+            if country == country_temp:
+                continue
+            for city_temp in cityson[country_temp]:
+                if not (citycostson.has_key[country] and citycostson[country].has_key[city_temp]) or city_temp in visited_cities:
+                    continue
+                city = cityson[country][city_temp]
+                distance = vincenty((lat, lon), (city['lan'], city['lon']))
+                if distance < nearest_measure:
+                    nearest_measure = distance
+                    nearest_city = city
+                    country_changed = country_temp
+    return nearest_city, country_temp
+
 
 def rome2rio(city_1, city_2, budget):
-	url = 'http://free.rome2rio.com/api/1.2/json/Search?key=jaWnO4YP&oName=%s&dName=%s'%(city_1, city_2)
-	response = requests.get(url)
-	data =  response.json()["routes"]
-	for route in routes:
-		if route["indicativePrice"]["price"] < budget:
-			return route
-	return False
+    url = 'http://free.rome2rio.com/api/1.2/json/Search?key=jaWnO4YP&oName=%s&dName=%s' % (city_1, city_2)
+    response = requests.get(url)
+    data = response.json()["routes"]
+    for route in routes:
+        if route["indicativePrice"]["price"] < budget:
+            return route
+    return False
 
 
 def check(request):
@@ -130,22 +134,17 @@ def check(request):
 
         lat, longi = [float(x.encode('ascii', 'ignore').strip()) for x in location.split(',')]
         location = Geocoder.reverse_geocode(lat, longi)
-        (city, country) = location.city, location.country
 
-        list_places = places_to_visit(location, price)
+        price, first_country = places_to_visit(location, price)
 
-        pprint(list_places)
+        list_places = []
 
-        final_list = []
-        for place in list_places:
-            if get_price_city(place) < (0.6 * price):
-                print "going to " + place " + now! :D"
-                price -= get_pleasure_price(place)
+        if first_country is not None:
+            list_places.append(first_country)
+            go_nearby(geolocator.geocode(first_country), price)
+        else:
+            go_nearby(location, price)
 
-                final_list.append(roam_nearby_places(place, price))
-                continue
-
-        # print/ show the final_list
         return render(request, "index.html", {})
     else:
         return HttpResponseRedirect('/')

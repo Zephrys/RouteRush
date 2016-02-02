@@ -16,7 +16,6 @@ from places_to_visit import places_to_visit
 
 from pygeocoder import Geocoder
 
->>>>>>> some algo to compute where to go
 
 def home(request):
     return render(request, "index.html", {})

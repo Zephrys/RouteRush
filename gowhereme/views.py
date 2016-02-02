@@ -44,7 +44,9 @@ def getDays(city,country, budget):
 				if not Flag:
 					continue
 				else:
-					places.append(location)
+					if location.has_key["photos"]:
+						location["image"] = getPhoto(location["photos"]["photo_reference"])
+						places.append(location)
 
 	days = 0
 	number_of_places = len(places)
@@ -57,7 +59,12 @@ def getDays(city,country, budget):
 			break
 		budget = budget - citycostson[country][city]
 
-	return days, places, budget, citycostson[country][city]
+	return days, places[:days*4], budget, citycostson[country][city]
+
+def getPhoto(reference):
+	url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s" %(reference,api_key)
+	response = requests.get(url).url
+	return response
 
 def getNearestAirport(lat, lon):
 	airson = json.loads(open('airports.json').read())
@@ -111,7 +118,6 @@ def rome2rio(city_1, city_2, budget):
 	for route in routes:
 		if route["indicativePrice"]["price"] < budget:
 			return route
-
 	return False
 
 

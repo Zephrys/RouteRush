@@ -98,7 +98,11 @@ def rome2rio(city_1, city_2, budget):
     try:
         data = response.json()["routes"]
         for route in data:
+<<<<<<< HEAD
             if not (route.has_key("indicativePrice") and route["indicativePrice"].has_key("price")) and not ("bus" in route["name"].lower() or "train" in route["name"].lower() or "cab" in route["name"].lower() or "taxi" in route["name"] or  "ferry" in route["name"]):
+=======
+            if not (route.has_key("indicativePrice") and route["indicativePrice"].has_key("price")):
+>>>>>>> is smoother, rome2rio and get_rio return a lot of noise as they don't work with iata codes, need to find do data pre processing
                 continue
             if float(route["indicativePrice"]["price"]) < price:
                 price = float(route["indicativePrice"]["price"])
@@ -109,10 +113,14 @@ def rome2rio(city_1, city_2, budget):
 
 #multiple appends of visited_cities
 # budget 0 pe crash?
+<<<<<<< HEAD
 # add initial plane route
 def go_nearby(starting_city, flew_to, price, visited_cities):
     iata = getNearestAirport(starting_city.latitude, starting_city.longitude)
     scity = Geocoder.geocode(str(iata['lat']) + "," +  str(iata['lon'])).city
+=======
+def go_nearby(starting_city, flew_to, price, visited_cities):
+>>>>>>> is smoother, rome2rio and get_rio return a lot of noise as they don't work with iata codes, need to find do data pre processing
     if flew_to.city is None:
         flew_to.city = str(flew_to)
     if starting_city.city is None:
@@ -189,7 +197,6 @@ def authenticate():
 
     return ast.literal_eval(r.text)
 
-#copenhagen typenoise
 def get_rio(source, destination):
     url = 'http://free.rome2rio.com/api/1.2/json/Search?key=jaWnO4YP&oName=%s&dName=%s' % (source, destination)
     response = requests.get(url)

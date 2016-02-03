@@ -18,7 +18,6 @@ from pygeocoder import Geocoder
 def home(request):
     return render(request, "index.html", {})
 
-# no location ka scen
 
 def check(request):
     if request.method == "POST":

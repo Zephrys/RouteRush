@@ -61,11 +61,12 @@ def check(request):
             print location
             location_flight = Geocoder.geocode(first_dest)[0]
             response = go_nearby(Geocoder.geocode(location)[0], location_flight, price, list_places)
+            list_places = [route] + response
         else:
             print 'here'
             location = Geocoder.geocode(location)[0]
             response = go_nearby(location, location, price, list_places)
-        list_places =( [route] + response)
+            list_places =response
         return render(request, "index.html", {'places_list': list_places,
                                               'origin': 'Delhi',
                                               'dest': 'Mumbai'})

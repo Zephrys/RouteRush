@@ -12,7 +12,6 @@
     <script type="text/javascript" src="{% static "assets/js/jquery-2.2.0.min.js" %}"></script>
     <script type="text/javascript" src="{% static "assets/js/typed.js"%}"></script>
     <script type="text/javascript" src="{% static "assets/js/bootstrap.min.js"%}"></script>
-
     <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
 		<link rel="stylesheet" href="{% static "assets/css/main.css"%}" />
     <link rel="stylesheet" href="{% static "assets/css/materialize.min.css"%}" />
@@ -30,7 +29,7 @@
         <!-- Signup Form -->
       <form id="signup-form" method="post" action="/check/" style="width: 300px; margin: 0 auto;">
         {% csrf_token%}
-        <input type="text" name="money" id="money" placeholder="" required" />
+        <input type="text" name="money" id="money" placeholder=""  onclick="Clear()"; required/>
         <input type="submit" value="&#9992;"  onclick="loader();" />
         <input type="hidden" name="location" id="location" />
       </form>
@@ -63,13 +62,11 @@
             typeSpeed: 0,
           });
       });
-      document.getElementById("money").value='';
     </script>
     <script>
       var x = document.getElementById("location");
       function getLocation() {
-          document.getElementById("money").value='';
-          document.getElementById("money").placeholder='';
+
           if (navigator.geolocation) {
               navigator.geolocation.getCurrentPosition(showPosition);
           } else {
@@ -78,6 +75,12 @@
       }
       function showPosition(position) {
           x.value = position.coords.latitude + "," +  position.coords.longitude;
+      }
+
+      function Clear(){
+          console.log("clear");
+          document.getElementById("money").value='';
+          document.getElementById("money").placeholder='';
       }
     </script>
 	</body>

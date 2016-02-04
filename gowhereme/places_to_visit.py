@@ -44,15 +44,24 @@ def getDays(city,country, budget):
 
     days = 0
     number_of_places = len(places)
+    print city
+    print 'budget before visiting city %s' %(str(budget))
     while True:
-        if budget - float(citycostson[country][city]["cost"]) < 0:
+        if (budget - float(citycostson[country][city]["cost"])) < 0:
             break
         days += 1
         number_of_places -= 4
-        if number_of_places < 0:
-            break
         budget -= float(citycostson[country][city]["cost"])
-    return dict(city=city, country=country, days=days, places=places[:days * 4]), budget
+        if number_of_places <= 0:
+            break
+    cost_per_day= citycostson[country][city]["cost"]
+    output_object = {}
+    for day in xrange(0,days):
+        output_object[str(day)] = []
+        for place in places[day:day+4]:
+            output_object[str(day)].append({'name': place['name'], 'photo': place['image']})
+
+    return output_object, budget, days, cost_per_day
 
 
 def getNextCity(lat, lon, country, visited_cities, sameCountry=True):
@@ -110,7 +119,7 @@ def rome2rio(city_1, city_2, budget):
 #multiple appends of visited_cities
 # budget 0 pe crash?
 # add initial plane route
-def go_nearby(starting_city, flew_to, price, visited_cities):
+def go_nearby(starting_city, flew_to, price, visited_cities, initial_route):
     iata = getNearestAirport(starting_city.latitude, starting_city.longitude)
     scity = Geocoder.geocode(str(iata['lat']) + "," +  str(iata['lon'])).city
     if flew_to.city is None:
@@ -124,8 +133,9 @@ def go_nearby(starting_city, flew_to, price, visited_cities):
     visited_in_city = []
     if starting_city != flew_to:
         print 'google se baat ho rahi hai'
-        (di, price) = getDays(flew_to.city, flew_to.country, price)
-        visited_in_city.append(di)
+        (di, price,days, cost_per_day) = getDays(flew_to.city, flew_to.country, price)
+        visited_in_city.append({'city': flew_to.city, 'country': flew_to.country,'duration_of_stay':days,'cost_per_day': cost_per_day,
+                'mode_of_transport': initial_route['name'], 'price_of_travel': initial_route['indicativePrice']['price'], 'return':False,'places': di})
     prev_route = None
     while price > 0:
         print present_city
@@ -147,23 +157,18 @@ def go_nearby(starting_city, flew_to, price, visited_cities):
         else:
             route_return = rome2rio(starting_city.city, dest.city, 32768)
             airfare = float(route_return['indicativePrice']['price'])
-
+        print airfare
         if airfare*1.2 < price:
             price -= float(route['indicativePrice']['price'])
-            print 'after traveling to destination %s' %(str(price))
-            (di, price) = getDays(dest.city, dest.country, price)
-            print di['days']
-            print 'money spent in city %s' %(str(price))
+            (di, price,days, cost_per_day) = getDays(dest.city, dest.country, price)
             present_city = dest
             prev_route = route_return
-            visited_in_city.append(route)
-            visited_in_city.append(di)
+            visited_in_city.append({'city': dest.city, 'country': dest.country,'duration_of_stay':days,'cost_per_day': cost_per_day,
+                'mode_of_transport': route['name'], 'price_of_travel': route['indicativePrice']['price'], 'return':False, 'places': di})
             visited_cities.append(dest.city)
         else:
-            print dest.city
-            print airfare
-            print route
-            visited_in_city.append(prev_route)
+            visited_in_city.append({'return': True, 'price_of_travel': prev_route['indicativePrice']['price'], 'mode_of_transport'
+                : prev_route['name']})
             return visited_in_city
 
 
@@ -200,23 +205,28 @@ def authenticate():
 
 def get_rio(source, destination):
     url = 'http://free.rome2rio.com/api/1.2/json/Search?key=jaWnO4YP&oName=%s&dName=%s' % (source, destination)
+    print url
     response = requests.get(url)
     response = response.json()
     price = 32768
     route = None
     for x in response["routes"]:
-        if (destination in x["name"]) and x.has_key("indicativePrice") and x["indicativePrice"].has_key("price"):
+        print 'yahan'
+        if (destination.lower() in x["name"].lower()) and x.has_key("indicativePrice") and x["indicativePrice"].has_key("price"):
             indicativePrice  = x["indicativePrice"]["price"]
             if indicativePrice < price:
                 price = indicativePrice
                 route = x
     if price == 32768:
+        print 'nahi mila'
         for x in response["routes"]:
-            if ("Fly" in x["name"]) and x.has_key("indicativePrice") and x["indicativePrice"].has_key("price"):
+            if ("Fly".lower() in x["name"].lower()) and x.has_key("indicativePrice") and x["indicativePrice"].has_key("price"):
                 indicativePrice  = x["indicativePrice"]["price"]
                 if indicativePrice < price:
                     price = indicativePrice
                     route = x
+    if price == 32768:
+        print response
     return price, route
 
 def get_min_fare(source, destination, token):
@@ -262,9 +272,9 @@ def pick_cities(origin, price):
         print "escaped that"
         print fare
         print price
-        if fare < 0.2 * price:
+        if fare < 0.3 * price:
             return price - fare, city, route
-    return price, False
+    return price, False, False
 
 
 def places_to_visit(location, price):

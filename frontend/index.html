@@ -18,7 +18,7 @@
     <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
 	</head>
-	<body onload="getLocation()">
+	<body onload="getLocation();">
       <div id= "content">
       <header id="header" align="center">
         <h1>How much money do you have?</h1>
@@ -29,8 +29,8 @@
         <!-- Signup Form -->
       <form id="signup-form" method="post" action="/check/" style="width: 300px; margin: 0 auto;">
         {% csrf_token%}
-        <input type="text" name="money" id="money" placeholder=""  onclick="Clear()getLocation();"; required/>
-        <input type="submit" value="&#9992;"  onclick="loader();getLocation();" />
+        <input type="text" name="money" id="money" placeholder=""  onclick="Clear()"; required/>
+        <input type="submit" value="&#9992;"  onclick="loader();" />
         <input type="hidden" name="location" id="location"/>
       </form>
 
@@ -66,15 +66,24 @@
     <script>
       var x = document.getElementById("location");
       function getLocation() {
-
+          console.log('nigga');
           if (navigator.geolocation) {
-              navigator.geolocation.getCurrentPosition(showPosition);
+              console.log('this');
+              navigator.geolocation.getCurrentPosition(showPosition,errorCallback,{timeout:100000});
+              console.log('yeah');
           } else {
+              console.log("scene");
               x.value = "Geolocation is not supported by this browser.";
           }
       }
+      function errorCallback(){
+        console.log('error');
+        x.value = "28.6139,77.2090";
+      }
       function showPosition(position) {
+          console.log("location set");
           x.value = position.coords.latitude + "," +  position.coords.longitude;
+
       }
 
       function Clear(){

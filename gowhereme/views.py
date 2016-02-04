@@ -25,7 +25,7 @@ def check(request):
         location = request.POST['location']
         price = price.split(" ")
         try:
-            if len(price) == 2:
+            if len(price) == 2 and price[1] == 'USD':
                 url = 'http://api.fixer.io/latest?symbols=%s&base=USD'%price[1].upper()
                 response = requests.get(url)
                 if response.status_code == 200:
@@ -60,16 +60,19 @@ def check(request):
             print 'this'
             print location
             location_flight = Geocoder.geocode(first_dest)[0]
-            response = go_nearby(Geocoder.geocode(location)[0], location_flight, price, list_places)
-            list_places = [route] + response
+            response = go_nearby(Geocoder.geocode(location)[0], location_flight, price, list_places, route)
+            list_places = response
         else:
             print 'here'
             location = Geocoder.geocode(location)[0]
             response = go_nearby(location, location, price, list_places)
             list_places =response
-        return render(request, "index.html", {'places_list': list_places,
-                                              'origin': 'Delhi',
-                                              'dest': 'Mumbai'})
+        o = open('final.output','w')
+        o.write(str(list_places))
+        pprint(response)
+        return render(request, "check.html", {'places_list': list_places,
+                                              'origin': location.city,
+                                              'dest': list_places[-1]['city']})
     else:
         list_places = []
         list_places.append({

@@ -117,16 +117,19 @@ def go_nearby(starting_city, flew_to, price, visited_cities):
         flew_to.city = str(flew_to)
     if starting_city.city is None:
         starting_city.city = str(starting_city)
-
+    print 'location mil gaaya'
     visited_cities.append(flew_to.city)
     visited_cities.append(starting_city.city)
     present_city = flew_to
     visited_in_city = []
     if starting_city != flew_to:
+        print 'google se baat ho rahi hai'
         (di, price) = getDays(flew_to.city, flew_to.country, price)
         visited_in_city.append(di)
     prev_route = None
     while price > 0:
+        print present_city
+        print 'Entering loop %s', price
         city, curr_country = getNextCity(present_city.latitude, present_city.longitude, present_city.country, visited_cities)
         if city is None:
             return visited_in_city
@@ -147,13 +150,19 @@ def go_nearby(starting_city, flew_to, price, visited_cities):
 
         if airfare*1.2 < price:
             price -= float(route['indicativePrice']['price'])
+            print 'after traveling to destination %s' %(str(price))
             (di, price) = getDays(dest.city, dest.country, price)
+            print di['days']
+            print 'money spent in city %s' %(str(price))
             present_city = dest
             prev_route = route_return
             visited_in_city.append(route)
             visited_in_city.append(di)
             visited_cities.append(dest.city)
         else:
+            print dest.city
+            print airfare
+            print route
             visited_in_city.append(prev_route)
             return visited_in_city
 
@@ -230,9 +239,11 @@ def get_min_fare(source, destination, token):
 def pick_cities(origin, price):
     done_cities =[]
     count = 10
+    origin_object = Geocoder.geocode(origin)
+    origin_aircode = getNearestAirport(origin_object.latitude, origin_object.longitude)
     while count!= 0:
         count -= 1
-        origin_object = Geocoder.geocode(origin)
+
         cities = json.loads(open('cities.json','r').read())
         country = random.choice(cities.keys())
         city = random.choice(cities[country].keys())
@@ -244,13 +255,13 @@ def pick_cities(origin, price):
         if dest_city.city is None:
             dest_city.city = city
         dest_aircode = getNearestAirport(dest_city.latitude,dest_city.longitude)['iata']
-        origin_aircode = getNearestAirport(origin_object.latitude, origin_object.longitude)
         try:
-            print origin_aircode['lat'] +","+ origin_aircode['lon']
             fare, route = get_rio(Geocoder.geocode(origin_aircode['lat'] +","+ origin_aircode['lon']).city, dest_city.city)
         except:
             continue
         print "escaped that"
+        print fare
+        print price
         if fare < 0.2 * price:
             return price - fare, city, route
     return price, False

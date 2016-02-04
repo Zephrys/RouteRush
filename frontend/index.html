@@ -29,9 +29,9 @@
         <!-- Signup Form -->
       <form id="signup-form" method="post" action="/check/" style="width: 300px; margin: 0 auto;">
         {% csrf_token%}
-        <input type="text" name="money" id="money" placeholder=""  onclick="Clear()"; required/>
-        <input type="submit" value="&#9992;"  onclick="loader();" />
-        <input type="hidden" name="location" id="location" />
+        <input type="text" name="money" id="money" placeholder=""  onclick="Clear()getLocation();"; required/>
+        <input type="submit" value="&#9992;"  onclick="loader();getLocation();" />
+        <input type="hidden" name="location" id="location"/>
       </form>
 
       <header id="header_2" align="center" style="font-family: 'Roboto', sans-serif;">

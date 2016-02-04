@@ -45,12 +45,12 @@ def check(request):
             price = 5000
 
         print request.POST
-
+        print 'started with%s' %(str(price))
         price, first_dest, route = pick_cities(location, float(price))
 		# what if this city isn't in our list??/
         # lat, longi = [float(x.encode('ascii', 'ignore').strip()) for x in location.split(',')]
         # location = Geocoder.reverse_geocode(lat, longi)
-
+        print 'after going to x I am left with %s' %(str(price))
 
         list_places = []
 
@@ -66,7 +66,6 @@ def check(request):
             location = Geocoder.geocode(location)[0]
             response = go_nearby(location, location, price, list_places)
         # sodhi ne yahan pe haga hua hai
-        pprint( [route] + response)
         return render(request, "index.html", {})
     else:
         list_places = []

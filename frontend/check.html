@@ -24,7 +24,7 @@
 	</head>
 	<body style="font: Roboto;color: black;font-size: 24;">
     <header align="center" style="color: wheat;font: Roboto;font-size: 60px;">
-        <h1>Itinerary Bro</h1>
+        <h1>Itinerary!</h1>
         <div class="container-fluid">
             <div class="row">
                 <div class="col s2 offset-s2"><h3>{{ origin }}</h3></div>
@@ -44,12 +44,29 @@
                         {% for place in places_list %}
                         <li>
                           <div onclick="var place = '{{ place.city }}'; setBackground(place);" class="collapsible-header ">
-                                  <img class="circle" width="90" height="90" src="{{ STATIC_URL }}/static/images/{{ place.city }}.jpg" %}">
-                                  {{ place.city }}</div>
-                          <div class="collapsible-body"><p><font color="white">{{ place.description }}</font></p></div>
+
+                              <div class="row">
+
+                                  <img class="col s2 thumbnail" width="90" height="90" src="{{ place.0.0.photo }}">
+                                  <span class="col s3">{{ place.city }}, {{ place.country }}</span>
+                                  <span class="col offset-s9">Days: {{ place.duration_of_stay }}</span>
+                              </div>
+                          </div>
+
+                          <div class="collapsible-body"><font color="white">
+                              {% for day in place.days %}
+                              <div class="row">
+                                  <div class="col s8">
+                                      Day {{ day }}: {{ place.places.day.name }}
+                                  </div>
+                              </div>
+                                  {% endfor %}
+                                </font>
+
+                                  </div>
+
                         </li>
                         {% endfor %}
-                        </li>
                     </ul>
                 </div>
               </div>

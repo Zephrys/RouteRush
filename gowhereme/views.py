@@ -77,25 +77,29 @@ def check(request):
         list_places = []
         list_places.append({
             'city': 'Delhi',
+            'duration_of_stay': 3,
+            '0': {'name': 'something'},
+            'country': 'India',
+            '0': [{'photo': u'https://lh6.googleusercontent.com/-Uyl8qQ0L5mw/VktH878sSlI/AAAAAAAABpY/5VHc2w9Zdh0/s1600-w400/', 'name': u'Wortham Theater Center'}, {'photo': u'https://lh4.googleusercontent.com/-NUa0U5mwUbc/Uu23N4RoP2I/AAAAAAAAxeo/64DLuV18FqQ/s1600-w400/', 'name': u'Revention Music Center'}, {'photo': u'https://lh6.googleusercontent.com/-RF_IizdDM8Q/UgVbz4-zRLI/AAAAAAAAAIc/0Q6-nqitrGU/s1600-w300/', 'name': u'Warehouse Live'}, {'photo': u'https://lh6.googleusercontent.com/-eAFDaDGnu98/VNC_8hwwC2I/AAAAAAAAAAc/uvd8_KIFdPE/s1600-w400/', 'name': u'Alley Theatre'}],
             'description': "Bakar jagah",
-            'days': 4,
+            'days': range(4),
         })
 
         list_places.append({
             'city': 'Mumbai',
             'description': 'Beaches Buisness capital of India',
-            'days': 3,
+
         })
         list_places.append({
             'city': 'Delhi',
             'description': "Bakar jagah",
-            'days': 4,
+
         })
 
         list_places.append({
             'city': 'Mumbai',
             'description': 'Beaches Buisness capital of India',
-            'days': 3,
+
         })
         return render(request, "check.html", {'places_list': list_places,
                                               'origin': 'Delhi',

@@ -66,7 +66,6 @@
     <script>
       var x = document.getElementById("location");
       function getLocation() {
-          console.log('nigga');
           if (navigator.geolocation) {
               console.log('this');
               navigator.geolocation.getCurrentPosition(showPosition,errorCallback,{timeout:100000});

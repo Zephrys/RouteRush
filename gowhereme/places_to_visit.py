@@ -8,7 +8,7 @@ from geopy.distance import vincenty
 
 from pygeocoder import Geocoder
 
-api_key = 'AIzaSyBYNhvCYTT7iIZNKavmTf9lplS57WQeCJw'
+api_key = 'AIzaSyBRYZvFpZjK4GPwQFcWV4A2OB_60sEvg6E'
 
 def getPhoto(reference):
     url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s" % (reference,
@@ -20,10 +20,12 @@ def getPhoto(reference):
 def getDays(city,country, budget):
     citycostson = json.loads(open('cities.json').read())
     location = Geocoder.geocode(city)
-    url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=%s&location=%s,%s&radius=3000'%(api_key,location.latitude,location.longitude)
+    photo = False
+    url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=%s&location=%s,%s&radius=30000'%(api_key,location.latitude,location.longitude)
     response = requests.get(url)
     allowed = ["point_of_interest", "establishment", "natural_feature", "museum", "amusement_park", "aquarium", "church", "hindu_temple", "mosque", "casino", "city_hall", "place_of_worship", "synagogue", "shopping_mall"]
     places = []
+    print url
     if response.status_code == 200:
         data = response.json()
         data = data["results"]
@@ -39,13 +41,16 @@ def getDays(city,country, budget):
                     continue
                 else:
                     if location.has_key("photos") and len(location["photos"])!=0 :
-                        location["image"] = getPhoto(location["photos"][0]["photo_reference"])
+                        if not photo:
+                            photo = getPhoto(location["photos"][0]["photo_reference"])
+                        location['image'] = photo
                         places.append(location)
 
     days = 0
     number_of_places = len(places)
     print city
     print 'budget before visiting city %s' %(str(budget))
+    print places
     while True:
         if (budget - float(citycostson[country][city]["cost"])) < 0:
             break
@@ -55,13 +60,16 @@ def getDays(city,country, budget):
         if number_of_places <= 0:
             break
     cost_per_day= citycostson[country][city]["cost"]
-    output_object = {}
-    for day in xrange(0,days):
-        output_object[str(day)] = []
+    output_object = []
+    for day in xrange(0,days,4):
+        output_object.append([])
         for place in places[day:day+4]:
-            output_object[str(day)].append({'name': place['name'], 'photo': place['image']})
+            output_object[int(day)].append({'name': place['name'], 'photo': place['image']})
+    f=[]
+    for i in xrange(0,len(output_object)):
+        f.append( "Day: %d "%(int(i)+1) + ", ".join([x['name'] for x in output_object[i]]))
 
-    return output_object, budget, days, cost_per_day
+    return f, budget, days, cost_per_day, photo
 
 
 def getNextCity(lat, lon, country, visited_cities, sameCountry=True):
@@ -119,7 +127,7 @@ def rome2rio(city_1, city_2, budget):
 #multiple appends of visited_cities
 # budget 0 pe crash?
 # add initial plane route
-def go_nearby(starting_city, flew_to, price, visited_cities, initial_route):
+def go_nearby(starting_city, flew_to, price, visited_cities, initial_route=[]):
     iata = getNearestAirport(starting_city.latitude, starting_city.longitude)
     scity = Geocoder.geocode(str(iata['lat']) + "," +  str(iata['lon'])).city
     if flew_to.city is None:
@@ -133,9 +141,9 @@ def go_nearby(starting_city, flew_to, price, visited_cities, initial_route):
     visited_in_city = []
     if starting_city != flew_to:
         print 'google se baat ho rahi hai'
-        (di, price,days, cost_per_day) = getDays(flew_to.city, flew_to.country, price)
-        visited_in_city.append({'city': flew_to.city, 'country': flew_to.country,'duration_of_stay':days,'cost_per_day': cost_per_day,
-                'mode_of_transport': initial_route['name'], 'price_of_travel': initial_route['indicativePrice']['price'], 'return':False,'places': di})
+        (di, price,days, cost_per_day, photo) = getDays(flew_to.city, flew_to.country, price)
+        visited_in_city.append({'days': range(days),'city': flew_to.city, 'country': flew_to.country,'duration_of_stay':days,'cost_per_day': cost_per_day,
+                'mode_of_transport': initial_route['name'], 'price_of_travel': initial_route['indicativePrice']['price'], 'return':False,'places': di, 'photo':photo})
     prev_route = None
     while price > 0:
         print present_city
@@ -160,11 +168,11 @@ def go_nearby(starting_city, flew_to, price, visited_cities, initial_route):
         print airfare
         if airfare*1.2 < price:
             price -= float(route['indicativePrice']['price'])
-            (di, price,days, cost_per_day) = getDays(dest.city, dest.country, price)
+            (di, price,days, cost_per_day, photo) = getDays(dest.city, dest.country, price)
             present_city = dest
             prev_route = route_return
-            visited_in_city.append({'city': dest.city, 'country': dest.country,'duration_of_stay':days,'cost_per_day': cost_per_day,
-                'mode_of_transport': route['name'], 'price_of_travel': route['indicativePrice']['price'], 'return':False, 'places': di})
+            visited_in_city.append({'days': range(days),'city': dest.city, 'country': dest.country,'duration_of_stay':days,'cost_per_day': cost_per_day,
+                'mode_of_transport': route['name'], 'price_of_travel': route['indicativePrice']['price'], 'return':False, 'places': di, 'photo':photo})
             visited_cities.append(dest.city)
         else:
             visited_in_city.append({'return': True, 'price_of_travel': prev_route['indicativePrice']['price'], 'mode_of_transport'

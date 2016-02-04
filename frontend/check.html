@@ -10,26 +10,28 @@
     <link rel="stylesheet" href="{% static "assets/css/font-awesome.min.css" %}">
     <link rel="stylesheet" href="{% static "assets/css/bootstrap.min.css"%}">
     <script type="text/javascript" src="{% static "assets/js/jquery-2.2.0.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "assets/js/typed.js"%}"></script>
     <script type="text/javascript" src="{% static "assets/js/bootstrap.min.js"%}"></script>
 
     <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
-		<link rel="stylesheet" href="{% static "assets/css/main.css"%}" />
-    <link rel="stylesheet" href="{% static "assets/css/materialize.min.css"%}" />
+		<link rel="stylesheet" href="{% static "assets/css/materialize.min.css"%}" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
-
 
     <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
 	</head>
-	<body style="font: Roboto;color: black;font-size: 24;">
-    <header align="center" style="color: wheat;font: Roboto;font-size: 60px;">
-        <h1>Itinerary!</h1>
+<!-- 	<body style="font: Roboto;color: black;font-size: 24;
+background: #02AAB0; /* fallback for old browsers */
+background: -webkit-linear-gradient(to left, #02AAB0 , #00CDAC); /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to left, #02AAB0 , #00CDAC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */*/">
+ -->
+<body style="font: Roboto; color: black; font-size: 24; background-color:#224683">
+   <header align="center" style="color: wheat;font: Roboto;font-size: 60px;">
+        <h3>Itinerary!</h3>
         <div class="container-fluid">
             <div class="row">
-                <div class="col s2 offset-s2"><h3>{{ origin }}</h3></div>
-                <div class="col s3"><i class="fa fa-plane"></i></div>
-                <div class="col s3 "><h3> {{ dest }}</h3></div>
+                <div class="col s1 offset-s3"><h5>{{ origin }}</h5></div>
+                <div class="col s2 offset-s1"><i class="fa fa-plane"></i></div>
+                <div class="col s3 "><h5> {{ second_city }}</h5></div>
             </div>
         </div>
     </header>
@@ -43,27 +45,28 @@
 
                         {% for place in places_list %}
                         <li>
-                          <div onclick="var place = '{{ place.city }}'; setBackground(place);" class="collapsible-header ">
+                          <div class="collapsible-header">
 
                               <div class="row">
-
-                                  <img class="col s2 thumbnail" width="90" height="90" src="{{ place.0.0.photo }}">
-                                  <span class="col s3">{{ place.city }}, {{ place.country }}</span>
-                                  <span class="col offset-s9">Days: {{ place.duration_of_stay }}</span>
+                                  <br>
+                                  <img class="col s2 thumbnail" width="90" height="90" src="{{ place.photo }}">
+                                  <span class="col s5">{{ place.city }}, {{ place.country }}</span>
+                                  <span class="col s5">Days: {{ place.duration_of_stay }}</span>
+                                  <span class="col s5">Money Spent To Get Here: ${{ place.price_of_travel}}</span>
+                                  <span class="col s4">Cost Per Day ${{place.cost_per_day}}</span>
                               </div>
                           </div>
 
-                          <div class="collapsible-body"><font color="white">
-                              {% for day in place.days %}
+                          <div class="collapsible-body" style="background-color:#FCFCFC;"><font color="black">
                               <div class="row">
+                                  {% for x in place.places%}
                                   <div class="col s8">
-                                      Day {{ day }}: {{ place.places.day.name }}
+                                    {{x}}
                                   </div>
-                              </div>
                                   {% endfor %}
+                              </div>
                                 </font>
-
-                                  </div>
+                          </div>
 
                         </li>
                         {% endfor %}
@@ -72,46 +75,21 @@
               </div>
           </div>
       </div>
+    <header align="center" style="color: wheat;font: Roboto;font-size: 60px;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col s1 offset-s3"><h5>{{ last_city }}</h5></div>
+                <div class="col s2 offset-s1"><i class="fa fa-plane"></i></div>
+                <div class="col s3 "><h5> {{ origin }}</h5></div>
+            </div>
+        </div>
+    </header>
+
+
 
       <!-- Scripts -->
-			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
-
-      <script>
-      $(function(){
-          $("#money").typed({
-            strings: ["1000 USD", "50000 INR"],
-            typeSpeed: 0,
-          });
-      });
-      document.getElementById("money").value='';
-    </script>
-    <script>
-        function setBackground(place) {
-            console.log(place);
-            document.body.style.background="url(\"/static/images/\" + place + \".jpg\") no-repeat center"
-        }
-      var x = document.getElementById("location");
-      function getLocation() {
-          document.getElementById("money").value='';
-          document.getElementById("money").placeholder='';
-          if (navigator.geolocation) {
-              navigator.geolocation.getCurrentPosition(showPosition);
-          } else {
-              x.value = "Geolocation is not supported by this browser.";
-          }
-      }
-      function showPosition(position) {
-          x.value = position.coords.latitude + "," +  position.coords.longitude;
-      }
-    </script>
+      <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
 	</body>
-  <script>
-  function loader(){
-    jQuery("#content").html('<h4 align="center">Awesomeness coming right up</h4><div class="progress"><div class="indeterminate"></div></div><h4 id="quotes" align="center"></h4>');
-      $.getScript("/static/assets/js/test.js", function(){
-      });
-  }
-  </script>
 </html>
 
 

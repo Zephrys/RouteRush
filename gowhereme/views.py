@@ -19,6 +19,7 @@ from pygeocoder import Geocoder
 def home(request):
     return render(request, "index.html", {})
 
+# no location ka scen
 
 def check(request):
     if request.method == "POST":
@@ -58,7 +59,7 @@ def check(request):
         # call getDays on the first destination here
         response = None
         if first_dest is not False:
-            print first_dest
+            print 'this'
             location_flight = Geocoder.geocode(first_dest)[0]
             response = go_nearby(Geocoder.geocode(location)[0], location_flight, price, list_places)
         else:

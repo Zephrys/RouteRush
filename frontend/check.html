@@ -1,0 +1,100 @@
+  <!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/html">
+	<head>
+		<title>Go Where Me</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta keywords = "travel, tourism, adventure, backpacking, backpacker">
+    {% load staticfiles %}
+    <link rel="shortcut icon" href="{% static "images/favicon.ico" %}" />
+    <link rel="stylesheet" href="{% static "assets/css/font-awesome.min.css" %}">
+    <link rel="stylesheet" href="{% static "assets/css/bootstrap.min.css"%}">
+    <script type="text/javascript" src="{% static "assets/js/jquery-2.2.0.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "assets/js/typed.js"%}"></script>
+    <script type="text/javascript" src="{% static "assets/js/bootstrap.min.js"%}"></script>
+
+    <!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="{% static "assets/css/main.css"%}" />
+    <link rel="stylesheet" href="{% static "assets/css/materialize.min.css"%}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+
+
+    <!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+	</head>
+	<body style="font: Roboto;color: black;font-size: 24;">
+    <header align="center" style="color: wheat;font: Roboto;font-size: 60px;">
+        <h1>Itinerary Bro</h1>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col s2 offset-s2"><h3>{{ origin }}</h3></div>
+                <div class="col s3"><i class="fa fa-plane"></i></div>
+                <div class="col s3 "><h3> {{ dest }}</h3></div>
+            </div>
+        </div>
+    </header>
+
+      <div>
+          <div class="container-fluid">
+
+              <div class="row">
+                <div class="col s8 offset-s2">
+                    <ul class="collapsible" data-collapsible="accordion">
+
+                        {% for place in places_list %}
+                        <li>
+                          <div onclick="var place = '{{ place.city }}'; setBackground(place);" class="collapsible-header ">
+                                  <img class="circle" width="90" height="90" src="{{ STATIC_URL }}/static/images/{{ place.city }}.jpg" %}">
+                                  {{ place.city }}</div>
+                          <div class="collapsible-body"><p><font color="white">{{ place.description }}</font></p></div>
+                        </li>
+                        {% endfor %}
+                        </li>
+                    </ul>
+                </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Scripts -->
+			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+
+      <script>
+      $(function(){
+          $("#money").typed({
+            strings: ["1000 USD", "50000 INR"],
+            typeSpeed: 0,
+          });
+      });
+      document.getElementById("money").value='';
+    </script>
+    <script>
+        function setBackground(place) {
+            console.log(place);
+            document.body.style.background="url(\"/static/images/\" + place + \".jpg\") no-repeat center"
+        }
+      var x = document.getElementById("location");
+      function getLocation() {
+          document.getElementById("money").value='';
+          document.getElementById("money").placeholder='';
+          if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(showPosition);
+          } else {
+              x.value = "Geolocation is not supported by this browser.";
+          }
+      }
+      function showPosition(position) {
+          x.value = position.coords.latitude + "," +  position.coords.longitude;
+      }
+    </script>
+	</body>
+  <script>
+  function loader(){
+    jQuery("#content").html('<h4 align="center">Awesomeness coming right up</h4><div class="progress"><div class="indeterminate"></div></div><h4 id="quotes" align="center"></h4>');
+      $.getScript("/static/assets/js/test.js", function(){
+      });
+  }
+  </script>
+</html>
+
+

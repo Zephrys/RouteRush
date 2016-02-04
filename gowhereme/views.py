@@ -52,4 +52,29 @@ def check(request):
 
         return render(request, "index.html", {})
     else:
-        return HttpResponseRedirect('/')
+        list_places = []
+        list_places.append({
+            'city': 'Delhi',
+            'description': "Bakar jagah",
+            'days': 4,
+        })
+
+        list_places.append({
+            'city': 'Mumbai',
+            'description': 'Beaches Buisness capital of India',
+            'days': 3,
+        })
+        list_places.append({
+            'city': 'Delhi',
+            'description': "Bakar jagah",
+            'days': 4,
+        })
+
+        list_places.append({
+            'city': 'Mumbai',
+            'description': 'Beaches Buisness capital of India',
+            'days': 3,
+        })
+        return render(request, "check.html", {'places_list': list_places,
+                                              'origin': 'Delhi',
+                                              'dest': 'Mumbai'})

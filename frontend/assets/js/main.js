@@ -31,7 +31,7 @@
 			}, 100);
 		});
 
-	// Slideshow Background.
+	//// Slideshow Background.
 		(function() {
 
 			// Settings.

@@ -23,6 +23,16 @@
 	}
 
 	body {
+    /*background:#000 no-repeat center center fixed;*/
+    /*-webkit-background-size: cover;*/
+    /*-moz-background-size: cover;*/
+    /*-o-background-size: cover;*/
+    /*background-size: cover;*/
+    /*-webkit-transition: background 1s ease-in-out;*/
+    /*-moz-transition: background 1s ease-in-out;*/
+    /*-o-transition: background 1s ease-in-out;*/
+    /*-ms-transition: background 1s ease-in-out;*/
+    /*transition: background 1s ;*/
 		line-height: 1;
 	}
 

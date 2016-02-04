@@ -75,4 +75,6 @@ def check(request):
             'description': 'Beaches Buisness capital of India',
             'days': 3,
         })
-        return render(request, "check.html", {'places_list': list_places})
+        return render(request, "check.html", {'places_list': list_places,
+                                              'origin': 'Delhi',
+                                              'dest': 'Mumbai'})

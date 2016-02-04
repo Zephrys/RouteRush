@@ -98,7 +98,7 @@ def rome2rio(city_1, city_2, budget):
     try:
         data = response.json()["routes"]
         for route in data:
-            if not (route.has_key("indicativePrice") and route["indicativePrice"].has_key("price")):
+            if not (route.has_key("indicativePrice") and route["indicativePrice"].has_key("price")) and not ("bus" in route["name"].lower() or "train" in route["name"].lower() or "cab" in route["name"].lower() or "taxi" in route["name"] or  "ferry" in route["name"]):
                 continue
             if float(route["indicativePrice"]["price"]) < price:
                 price = float(route["indicativePrice"]["price"])
@@ -109,6 +109,7 @@ def rome2rio(city_1, city_2, budget):
 
 #multiple appends of visited_cities
 # budget 0 pe crash?
+# add initial plane route
 def go_nearby(starting_city, flew_to, price, visited_cities):
     if flew_to.city is None:
         flew_to.city = str(flew_to)
@@ -135,9 +136,9 @@ def go_nearby(starting_city, flew_to, price, visited_cities):
         budget =0
 
         if dest.country != starting_city.country:
-            budget = float(get_rio(getNearestAirport(starting_city.latitude,starting_city.longitude)['iata'], getNearestAirport(dest.latitude, dest.longitude)['iata']))
+            budget = float(get_rio(str(starting_city), str(dest)))
         else:
-            budget = float(rome2rio(starting_city.city, dest.city, 32768)['indicativePrice']['price'])
+            budget = float(rome2rio(str(starting_city), str(dest), 32768)['indicativePrice']['price'])
 
         if budget*1.2 < price:
             price -= float(route['indicativePrice']['price'])
@@ -181,13 +182,16 @@ def authenticate():
 
     return ast.literal_eval(r.text)
 
+#copenhagen typenoise
 def get_rio(source, destination):
     url = 'http://free.rome2rio.com/api/1.2/json/Search?key=jaWnO4YP&oName=%s&dName=%s' % (source, destination)
+    print url , + "\tget_rio"
+    destination = destination.split(",")
     response = requests.get(url)
     response = response.json()
     price = 32768
     for x in response["routes"]:
-        if "Fly" in x["name"] and x.has_key("indicativePrice") and x["indicativePrice"].has_key("price"):
+        if ("Fly to %s"%(destination[0]) or "Fly to %s"%(destination[1])) in x["name"] and x.has_key("indicativePrice") and x["indicativePrice"].has_key("price"):
             indicativePrice  = x["indicativePrice"]["price"]
             if indicativePrice < price:
                 price = indicativePrice
@@ -228,12 +232,9 @@ def pick_cities(origin, price):
         dest_aircode = getNearestAirport(dest_city.latitude,dest_city.longitude)['iata']
         origin_aircode = getNearestAirport(origin_object.latitude, origin_object.longitude)['iata']
         try:
-            fare = get_rio(origin_aircode, dest_aircode)
+            fare = get_rio(str(origin_object), str(dest_city))
         except:
-            try:
-                fare = get_rio(dest_aircode, origin_aircode)
-            except:
-                continue
+            continue
         print fare
         if fare < 0.4 * price:
             return price, city

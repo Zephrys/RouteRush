@@ -6,7 +6,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 import time
 import json
 from geopy.distance import vincenty
-from pprint import pprint
 from django.contrib import messages
 from pprint import pprint
 
@@ -48,7 +47,7 @@ def check(request):
 
         print request.POST
 
-        price, first_dest = pick_cities(location, float(price))
+        price, first_dest, route = pick_cities(location, float(price))
 		# what if this city isn't in our list??/
         # lat, longi = [float(x.encode('ascii', 'ignore').strip()) for x in location.split(',')]
         # location = Geocoder.reverse_geocode(lat, longi)
@@ -60,6 +59,7 @@ def check(request):
         response = None
         if first_dest is not False:
             print 'this'
+            print location
             location_flight = Geocoder.geocode(first_dest)[0]
             response = go_nearby(Geocoder.geocode(location)[0], location_flight, price, list_places)
         else:
@@ -67,7 +67,7 @@ def check(request):
             location = Geocoder.geocode(location)[0]
             response = go_nearby(location, location, price, list_places)
         # sodhi ne yahan pe haga hua hai
-        print response
+        pprint( [route] + response)
         return render(request, "index.html", {})
     else:
         list_places = []

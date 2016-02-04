@@ -111,6 +111,8 @@ def rome2rio(city_1, city_2, budget):
 # budget 0 pe crash?
 # add initial plane route
 def go_nearby(starting_city, flew_to, price, visited_cities):
+    iata = getNearestAirport(starting_city.latitude, starting_city.longitude)
+    scity = Geocoder.geocode(str(iata['lat']) + "," +  str(iata['lon'])).city
     if flew_to.city is None:
         flew_to.city = str(flew_to)
     if starting_city.city is None:
@@ -123,8 +125,8 @@ def go_nearby(starting_city, flew_to, price, visited_cities):
     if starting_city != flew_to:
         (di, price) = getDays(flew_to.city, flew_to.country, price)
         visited_in_city.append(di)
+    prev_route = None
     while price > 0:
-        print str(present_city)
         city, curr_country = getNextCity(present_city.latitude, present_city.longitude, present_city.country, visited_cities)
         if city is None:
             return visited_in_city
@@ -133,23 +135,26 @@ def go_nearby(starting_city, flew_to, price, visited_cities):
         # at = authenticate()
         if dest.city is None:
             dest.city = city
-        budget =0
+        airfare =0
 
+        route_return = None
         if dest.country != starting_city.country:
-            print 'hello hello'
-            iata = getNearestAirport(starting_city.latitude, starting_city.longitude)
-            budget = float(get_rio(Geocoder.geocode(iata['lat'], iat['lon']).city, dest.city))
+            airfare, route_return = get_rio(dest.city, scity)
+            airfare = float(airfare)
         else:
-            budget = float(rome2rio(starting_city.city, dest.city, 32768)['indicativePrice']['price'])
+            route_return = rome2rio(starting_city.city, dest.city, 32768)
+            airfare = float(route_return['indicativePrice']['price'])
 
-        if budget*1.2 < price:
+        if airfare*1.2 < price:
             price -= float(route['indicativePrice']['price'])
             (di, price) = getDays(dest.city, dest.country, price)
             present_city = dest
+            prev_route = route_return
             visited_in_city.append(route)
             visited_in_city.append(di)
             visited_cities.append(dest.city)
         else:
+            visited_in_city.append(prev_route)
             return visited_in_city
 
 
@@ -187,23 +192,24 @@ def authenticate():
 #copenhagen typenoise
 def get_rio(source, destination):
     url = 'http://free.rome2rio.com/api/1.2/json/Search?key=jaWnO4YP&oName=%s&dName=%s' % (source, destination)
-    print url
     response = requests.get(url)
     response = response.json()
     price = 32768
+    route = None
     for x in response["routes"]:
         if (destination in x["name"]) and x.has_key("indicativePrice") and x["indicativePrice"].has_key("price"):
             indicativePrice  = x["indicativePrice"]["price"]
             if indicativePrice < price:
                 price = indicativePrice
+                route = x
     if price == 32768:
         for x in response["routes"]:
             if ("Fly" in x["name"]) and x.has_key("indicativePrice") and x["indicativePrice"].has_key("price"):
                 indicativePrice  = x["indicativePrice"]["price"]
                 if indicativePrice < price:
                     price = indicativePrice
-    print "Done %s" %str(price)
-    return price
+                    route = x
+    return price, route
 
 def get_min_fare(source, destination, token):
     url = "https://api.test.sabre.com/v2/shop/flights/fares?origin=%s&destination=%s&departuredate=%s&lengthofstay=15"
@@ -223,8 +229,6 @@ def get_min_fare(source, destination, token):
 
 
 def pick_cities(origin, price):
-    # very low budget
-    print 'entered pick cities'
     done_cities =[]
     count = 10
     while count!= 0:
@@ -244,12 +248,12 @@ def pick_cities(origin, price):
         origin_aircode = getNearestAirport(origin_object.latitude, origin_object.longitude)
         try:
             print origin_aircode['lat'] +","+ origin_aircode['lon']
-            fare = get_rio(Geocoder.geocode(origin_aircode['lat'] +","+ origin_aircode['lon']).city, dest_city.city)
+            fare, route = get_rio(Geocoder.geocode(origin_aircode['lat'] +","+ origin_aircode['lon']).city, dest_city.city)
         except:
             continue
         print "escaped that"
-        if fare < 0.4 * price:
-            return price, city
+        if fare < 0.2 * price:
+            return price - fare, city, route
     return price, False
 
 

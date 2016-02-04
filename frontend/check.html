@@ -23,47 +23,35 @@
 		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
 	</head>
 	<body style="font: Roboto;color: black;font-size: 24;">
+    <header align="center" style="color: wheat;font: Roboto;font-size: 60px;">
+        Itinerary Bro
+    </header>
+    <br>
       <div>
           <div class="container-fluid">
 
-            <ul class="collapsible" data-collapsible="accordion">
+              <div class="row">
+                <div class="col s8 offset-s2">
+                    <ul class="collapsible" data-collapsible="accordion">
 
-                {% for place in places_list %}
-                <li>
-                  <div onclick="var place = '{{ place.city }}'; setBackground(place);" class="collapsible-header ">
-                          <img class="circle" width="90" height="90" src="{{ STATIC_URL }}/static/images/{{ place.city }}.jpg" %}">
-                          {{ place.city }}</div>
-                  <div class="collapsible-body"><p>{{ place.description }}</p></div>
-                </li>
-                {% endfor %}
-                </li>
-            </ul>
+                        {% for place in places_list %}
+                        <li>
+                          <div onclick="var place = '{{ place.city }}'; setBackground(place);" class="collapsible-header ">
+                                  <img class="circle" width="90" height="90" src="{{ STATIC_URL }}/static/images/{{ place.city }}.jpg" %}">
+                                  {{ place.city }}</div>
+                          <div class="collapsible-body"><p><font color="white">{{ place.description }}</font></p></div>
+                        </li>
+                        {% endfor %}
+                        </li>
+                    </ul>
+                </div>
+              </div>
           </div>
       </div>
 
-{#              <ul class="collection collapsible popout" data-collapsible="accordion">#}
-{##}
-{#                  {% for place in places_list %}#}
-{#                  <li class="collection-item avatar" style="opacity: 0.3">#}
-{#                    <img src="{{ STATIC_URL }}/static/images/{{ place.city }}.jpg" %}" alt="" class="circle">#}
-{#                        <div class="center-align"> <span class="title"> <b style="font: Roboto;color: black">{{ place.city }}</b> </span></div>#}
-{#                        <div class="row">#}
-{#                            <p>{{ place.days }}<br>#}
-{#                            </p>#}
-{#                        </div>#}
-{##}
-{#                        <div class="center-align"><i class="fa fa-arrow-circle-down"></i></div>#}
-{#                        <div class="row">#}
-{#                            <p class="col-lg-4"> Second Line</p>#}
-{#                        </div>#}
-{#                      <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>#}
-{#                  </li>#}
-{#                  {% endfor %}#}
-{#              </ul>#}
-
       <!-- Scripts -->
 			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
-			<script src="{% static "assets/js/main.js" %}"></script>
+
       <script>
       $(function(){
           $("#money").typed({

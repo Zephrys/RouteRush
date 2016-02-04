@@ -65,8 +65,10 @@ def check(request):
             print 'here'
             location = Geocoder.geocode(location)[0]
             response = go_nearby(location, location, price, list_places)
-        # sodhi ne yahan pe haga hua hai
-        return render(request, "index.html", {})
+        list_places =( [route] + response)
+        return render(request, "index.html", {'places_list': list_places,
+                                              'origin': 'Delhi',
+                                              'dest': 'Mumbai'})
     else:
         list_places = []
         list_places.append({

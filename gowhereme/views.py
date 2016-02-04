@@ -18,7 +18,6 @@ from pygeocoder import Geocoder
 def home(request):
     return render(request, "index.html", {})
 
-# no location ka scen
 
 def check(request):
     if request.method == "POST":
@@ -26,7 +25,7 @@ def check(request):
         location = request.POST['location']
         price = price.split(" ")
         try:
-            if len(price) == 2:
+            if len(price) == 2 and price[1] == 'USD':
                 url = 'http://api.fixer.io/latest?symbols=%s&base=USD'%price[1].upper()
                 response = requests.get(url)
                 if response.status_code == 200:
@@ -46,12 +45,12 @@ def check(request):
             price = 5000
 
         print request.POST
-
+        print 'started with%s' %(str(price))
         price, first_dest, route = pick_cities(location, float(price))
 		# what if this city isn't in our list??/
         # lat, longi = [float(x.encode('ascii', 'ignore').strip()) for x in location.split(',')]
         # location = Geocoder.reverse_geocode(lat, longi)
-
+        print 'after going to x I am left with %s' %(str(price))
 
         list_places = []
 
@@ -61,14 +60,19 @@ def check(request):
             print 'this'
             print location
             location_flight = Geocoder.geocode(first_dest)[0]
-            response = go_nearby(Geocoder.geocode(location)[0], location_flight, price, list_places)
+            response = go_nearby(Geocoder.geocode(location)[0], location_flight, price, list_places, route)
+            list_places = response
         else:
             print 'here'
             location = Geocoder.geocode(location)[0]
             response = go_nearby(location, location, price, list_places)
-        # sodhi ne yahan pe haga hua hai
-        pprint( [route] + response)
-        return render(request, "index.html", {})
+            list_places =response
+        o = open('final.output','w')
+        o.write(str(list_places))
+        pprint(response)
+        return render(request, "check.html", {'places_list': list_places,
+                                              'origin': location.city,
+                                              'dest': list_places[-1]['city']})
     else:
         list_places = []
         list_places.append({

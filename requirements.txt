@@ -1,0 +1,5 @@
+Django == 1.9.2
+geopy == 1.11.0
+pygeocoder == 1.2.5
+beautifulsoup4 == 4.4.1
+Requests == 2.9.1

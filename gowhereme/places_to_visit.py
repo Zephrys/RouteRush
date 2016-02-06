@@ -267,7 +267,7 @@ def pick_cities(origin, price):
         cities = json.loads(open('cities.json','r').read())
         country = random.choice(cities.keys())
         city = random.choice(cities[country].keys())
-        
+    	print city    
         if country == origin_object.country or city in done_cities:
             continue
         done_cities.append(city)

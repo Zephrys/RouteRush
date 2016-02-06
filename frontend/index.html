@@ -68,7 +68,7 @@
       <script>
       $(function(){
           $("#money").typed({
-            strings: ["1000 USD", "50000 INR"],
+            strings: ["1000 USD", "50000 INR", "1000 GBP", "2500 NOK", "2000 EUR"],
             typeSpeed: 0,
           });
       });
@@ -96,7 +96,11 @@
       }
 
       function Clear(){
-          console.log("clear");
+	  $("#money").remove();
+        
+          $("#signup-form").prepend(
+'<input type="text" name="money" id="money" placeholder=""  required autofocus="autofocus"/>');
+	  console.log("clear");
           document.getElementById("money").value='';
           document.getElementById("money").placeholder='';
       }

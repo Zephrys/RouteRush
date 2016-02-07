@@ -5,14 +5,18 @@ import json
 import random
 from datetime import datetime
 from geopy.distance import vincenty
-
+from api_keys import rio_key as rkey
+from api_keys import goo_key
 from pygeocoder import Geocoder
+from pymongo import MongoClient
 
-api_key = 'AIzaSyBRYZvFpZjK4GPwQFcWV4A2OB_60sEvg6E'
+client = MongoClient('mongodb://localhost:27017')
+rr = client.rr
+
 
 def getPhoto(reference):
     url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s" % (reference,
-                                                                                                      api_key)
+                                                                                                      goo_key())
     response = requests.get(url).url
     return response
 
@@ -21,11 +25,11 @@ def getDays(city,country, budget):
     citycostson = json.loads(open('cities.json').read())
     location = Geocoder.geocode(city)
     photo = False
-    url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=%s&location=%s,%s&radius=30000'%(api_key,location.latitude,location.longitude)
+    url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=%s&location=%s,%s&radius=30000'%(goo_key(),location.latitude,location.longitude)
     response = requests.get(url)
     allowed = ["point_of_interest", "establishment", "natural_feature", "museum", "amusement_park", "aquarium", "church", "hindu_temple", "mosque", "casino", "city_hall", "place_of_worship", "synagogue", "shopping_mall"]
     places = []
-    
+
     if response.status_code == 200:
         data = response.json()
         data = data["results"]
@@ -48,9 +52,7 @@ def getDays(city,country, budget):
 
     days = 0
     number_of_places = len(places)
-    
-    
-    
+
     while True:
         if (budget - float(citycostson[country][city]["cost"])) < 0:
             break
@@ -108,7 +110,7 @@ def getNextCity(lat, lon, country, visited_cities, sameCountry=True):
 
 
 def rome2rio(city_1, city_2, budget):
-    url = 'http://free.rome2rio.com/api/1.2/json/Search?key=jaWnO4YP&oName=%s&dName=%s' % (city_1, city_2)
+    url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rkey(),city_1, city_2)
     response = requests.get(url)
     price = 32768
     route_o = False
@@ -134,20 +136,20 @@ def go_nearby(starting_city, flew_to, price, visited_cities, initial_route=[]):
         flew_to.city = str(flew_to)
     if starting_city.city is None:
         starting_city.city = str(starting_city)
-    
+
     visited_cities.append(flew_to.city)
     visited_cities.append(starting_city.city)
     present_city = flew_to
     visited_in_city = []
     if starting_city != flew_to:
-        
+
         (di, price,days, cost_per_day, photo) = getDays(flew_to.city, flew_to.country, price)
         visited_in_city.append({'days': range(days),'city': flew_to.city, 'country': flew_to.country,'duration_of_stay':days,'cost_per_day': cost_per_day,
                 'mode_of_transport': initial_route['name'], 'price_of_travel': initial_route['indicativePrice']['price'], 'return':False,'places': di, 'photo':photo})
     prev_route = None
     while price > 0:
-        
-        
+
+
         city, curr_country = getNextCity(present_city.latitude, present_city.longitude, present_city.country, visited_cities)
         if city is None:
             return visited_in_city
@@ -167,7 +169,7 @@ def go_nearby(starting_city, flew_to, price, visited_cities, initial_route=[]):
         else:
             route_return = rome2rio(starting_city.city, dest.city, 32768)
             airfare = float(route_return['indicativePrice']['price'])
-        
+
         if airfare*1.2 < price:
             price -= float(route['indicativePrice']['price'])
             (di, price,days, cost_per_day, photo) = getDays(dest.city, dest.country, price)
@@ -214,40 +216,40 @@ def authenticate():
     return ast.literal_eval(r.text)
 
 def get_rio(source, destination):
-    url = 'http://free.rome2rio.com/api/1.2/json/Search?key=jaWnO4YP&oName=%s&dName=%s' % (source, destination)
-    
+    url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rkey(),source, destination)
+
     response = requests.get(url)
     response = response.json()
     price = 32768
     route = None
     for x in response["routes"]:
-        
+
         if (destination.lower() in x["name"].lower()) and x.has_key("indicativePrice") and x["indicativePrice"].has_key("price"):
             indicativePrice  = x["indicativePrice"]["price"]
             if indicativePrice < price:
                 price = indicativePrice
                 route = x
     if price == 32768:
-        
+
         for x in response["routes"]:
             if ("Fly".lower() in x["name"].lower()) and x.has_key("indicativePrice") and x["indicativePrice"].has_key("price"):
                 indicativePrice  = x["indicativePrice"]["price"]
                 if indicativePrice < price:
                     price = indicativePrice
                     route = x
-    
-   
+
+
     return price, route
 
 def get_min_fare(source, destination, token):
     url = "https://api.test.sabre.com/v2/shop/flights/fares?origin=%s&destination=%s&departuredate=%s&lengthofstay=15"
     url = url % (source, destination, str(datetime.now().date()))
-    
-    
-    
-    # 
+
+
+
+    #
     res = requests.get(url, headers={ 'Authorization': 'Bearer ' + token})
-    
+
     di = ast.literal_eval(res.text)
 
     # print di
@@ -267,7 +269,7 @@ def pick_cities(origin, price):
         cities = json.loads(open('cities.json','r').read())
         country = random.choice(cities.keys())
         city = random.choice(cities[country].keys())
-    	print city    
+    	print city
         if country == origin_object.country or city in done_cities:
             continue
         done_cities.append(city)
@@ -279,9 +281,9 @@ def pick_cities(origin, price):
             fare, route = get_rio(Geocoder.geocode(origin_aircode['lat'] +","+ origin_aircode['lon']).city, dest_city.city)
         except:
             continue
-        
-        
-        
+
+
+
         if fare < 0.3 * price:
             return price - fare, city, route
     return price, False, False

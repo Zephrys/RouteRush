@@ -8,7 +8,6 @@ import json
 from geopy.distance import vincenty
 from django.contrib import messages
 
-
 # from scripts.get_city import get_price_city
 from places_to_visit import places_to_visit, go_nearby, pick_cities
 
@@ -24,7 +23,7 @@ def check(request):
         price = request.POST['money']
         location = request.POST['location']
         price = price.split(" ")
-        
+
         try:
             if len(price) == 2 and price[1] != 'USD':
                 url = 'http://api.fixer.io/latest?symbols=%s&base=USD'%price[1].upper()
@@ -45,33 +44,33 @@ def check(request):
         except:
             price = 5000
 
-        
-        
+
+
         price, first_dest, route = pick_cities(location, float(price))
 		# what if this city isn't in our list??/
         # lat, longi = [float(x.encode('ascii', 'ignore').strip()) for x in location.split(',')]
         # location = Geocoder.reverse_geocode(lat, longi)
-        
+
 
         list_places = []
 
         # call getDays on the first destination here
         response = None
         if first_dest is not False:
-            
-            
+
+
             location_flight = Geocoder.geocode(first_dest)[0]
             location = Geocoder.geocode(location)[0]
             response = go_nearby(location, location_flight, price, list_places, route)
             list_places = response
         else:
-            
+
             location = Geocoder.geocode(location)[0]
             response = go_nearby(location, location, price, list_places)
             list_places =response
-      
-       
-        
+
+
+
         return render(request, "check.html", {'places_list': list_places[:-1],
                                               'origin': location.city,
                                               'second_city': list_places[0]['city'],

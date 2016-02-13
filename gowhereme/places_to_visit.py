@@ -10,11 +10,15 @@ from api_keys import goo_key
 from pygeocoder import Geocoder
 from pymongo import MongoClient
 
-client = MongoClient('mongodb://localhost:27017')
-rr = client.rr
+
+mongoclient = MongoClient('mongodb://localhost:27017/')
+routerush = mongoclient.routerush
+
+route_rome = routerush.rome2rio
 
 api_key = goo_key()
 rome2rio_key = rio_key()
+
 
 def getPhoto(reference):
     url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s" % (reference,
@@ -113,9 +117,14 @@ def getNextCity(lat, lon, country, visited_cities, sameCountry=True):
 
 
 def rome2rio(city_1, city_2, budget):
-    url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rkey(),city_1, city_2)
-    url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rome2rio_key, city_1, city_2)
-    response = requests.get(url)
+    a = route_rome.find({'city1': city1, 'city2': city2})
+    if a.count() == 1:
+        print "found in mongo"
+        response = a[0]['response']
+    else:
+        url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rome2rio_key, city_1, city_2)
+        response = requests.get(url)
+        route_rome.insert({'city1': city1, 'city2': city2, 'response': response})
     price = 32768
     route_o = False
     try:
@@ -158,8 +167,8 @@ def go_nearby(starting_city, flew_to, price, visited_cities, initial_route=[]):
         if city is None:
             return visited_in_city
         route = rome2rio(present_city.city, city, price)
-	if route is False:
-	    continue
+    if route is False:
+        continue
         dest = Geocoder.geocode(city)
         # at = authenticate()
         if dest.city is None:
@@ -220,9 +229,17 @@ def authenticate():
     return ast.literal_eval(r.text)
 
 def get_rio(source, destination):
-    url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rkey(),source, destination)
-    response = requests.get(url)
-    response = response.json()
+    response = {}
+    a = route_rome.find({'city1': source, 'city2': destination})
+    if a.count() == 1:
+        print "found in mongo"
+        response = a[0]['response']
+    else:
+        url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rome2rio_key, source, destination)
+        response = requests.get(url)
+        response = response.json()
+        route_rome.insert({'city1': source, 'city2': destination, 'response': response})
+
     price = 32768
     route = None
     for x in response["routes"]:

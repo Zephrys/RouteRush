@@ -122,6 +122,7 @@ def rome2rio(city_1, city_2, budget):
         print "found in mongo"
         response = a[0]['response']
     else:
+
         url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rome2rio_key, city_1, city_2)
         response = requests.get(url)
         response = response.json()

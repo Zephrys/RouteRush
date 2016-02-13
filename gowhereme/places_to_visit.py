@@ -13,7 +13,6 @@ from pymongo import MongoClient
 client = MongoClient('mongodb://localhost:27017')
 rr = client.rr
 
-
 def getPhoto(reference):
     url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s" % (reference,
                                                                                                       goo_key())
@@ -22,6 +21,7 @@ def getPhoto(reference):
 
 
 def getDays(city,country, budget):
+    print "reached here" + str(city)
     citycostson = json.loads(open('cities.json').read())
     location = Geocoder.geocode(city)
     photo = False
@@ -110,7 +110,11 @@ def getNextCity(lat, lon, country, visited_cities, sameCountry=True):
 
 
 def rome2rio(city_1, city_2, budget):
+<<<<<<< HEAD
     url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rkey(),city_1, city_2)
+=======
+    url = 'http://free.rome2rio.com/api/1.2/json/Search?key=670LizCP&oName=%s&dName=%s' % (city_1, city_2)
+>>>>>>> production changes
     response = requests.get(url)
     price = 32768
     route_o = False
@@ -216,8 +220,13 @@ def authenticate():
     return ast.literal_eval(r.text)
 
 def get_rio(source, destination):
+<<<<<<< HEAD
     url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rkey(),source, destination)
 
+=======
+    url = 'http://free.rome2rio.com/api/1.2/json/Search?key=670LizCP&oName=%s&dName=%s' % (source, destination)
+
+>>>>>>> production changes
     response = requests.get(url)
     response = response.json()
     price = 32768

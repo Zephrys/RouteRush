@@ -8,4 +8,3 @@ def rio_key():
 google = ['AIzaSyBYNhvCYTT7iIZNKavmTf9lplS57WQeCJw','AIzaSyBRYZvFpZjK4GPwQFcWV4A2OB_60sEvg6E']
 def goo_key():
     return random.choice(google)
-

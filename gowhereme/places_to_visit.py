@@ -9,11 +9,13 @@ from api_keys import rio_key as rkey
 from api_keys import goo_key
 from pygeocoder import Geocoder
 from pymongo import MongoClient
-
+from unidecode import unidecode
 
 mongoclient = MongoClient('mongodb://localhost:27017/')
 routerush = mongoclient.routerush
 
+gplaces = routerush.gplaces
+gphotos = routerush.gphotos
 route_rome = routerush.rome2rio
 
 api_key = goo_key()
@@ -22,23 +24,37 @@ rome2rio_key = rio_key()
 
 def getPhoto(reference):
     url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s" % (reference,
-                                                                                                      goo_key())
+    x = gphotos.find({'reference':reference})
+    if x.count()!=0:
+        print ' ye bhi mongo mein'
+        return x[0]['url']
+
     response = requests.get(url).url
+    x = gphotos.insert({'reference':reference, 'url': response})
     return response
 
 
 def getDays(city,country, budget):
-    print "reached here" + str(city)
     citycostson = json.loads(open('cities.json').read())
-    location = Geocoder.geocode(city)
+
+    citycostson = {k:{x.lower():y for x,y in v.items()} for k,v in citycostson.items()}
+    x = gplaces.find({'city': city, 'country': country})
+    if x.count()!=0:
+        data = x[0]
+        print 'get days mongo mein mila'
+        status = 200
+    else:
+        location = Geocoder.geocode(city + "," + country)
+        url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=%s&location=%s,%s&radius=30000'%(api_key,location.latitude,location.longitude)
+        response = requests.get(url)
+        status = response.status_code
+        data = response.json()
+        gplaces.insert({'city':city, 'country': country, 'results': response.json()['results']})
     photo = False
-    url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=%s&location=%s,%s&radius=30000'%(goo_key(),location.latitude,location.longitude)
-    response = requests.get(url)
     allowed = ["point_of_interest", "establishment", "natural_feature", "museum", "amusement_park", "aquarium", "church", "hindu_temple", "mosque", "casino", "city_hall", "place_of_worship", "synagogue", "shopping_mall"]
     places = []
 
-    if response.status_code == 200:
-        data = response.json()
+    if status  == 200:
         data = data["results"]
         for location in data:
             if "point_of_interest" not in location["types"]:
@@ -60,15 +76,16 @@ def getDays(city,country, budget):
     days = 0
     number_of_places = len(places)
 
+    city = unidecode(city)
     while True:
-        if (budget - float(citycostson[country][city]["cost"])) < 0:
+        if (budget - float(citycostson[country][city.lower()]["cost"])) < 0:
             break
         days += 1
         number_of_places -= 4
-        budget -= float(citycostson[country][city]["cost"])
+        budget -= float(citycostson[country][city.lower()]["cost"])
         if number_of_places <= 0:
             break
-    cost_per_day= citycostson[country][city]["cost"]
+    cost_per_day= citycostson[country][city.lower()]["cost"]
     output_object = []
     for day in xrange(0,days):
         output_object.append([])
@@ -117,17 +134,22 @@ def getNextCity(lat, lon, country, visited_cities, sameCountry=True):
 
 
 def rome2rio(city_1, city_2, budget):
-    a = route_rome.find({'city1': city1, 'city2': city2})
+    response = {}
+    a = route_rome.find({'city1': city_1, 'city2': city_2})
+
     if a.count() == 1:
-        print "found in mongo"
+        print "found in mongo 1"
         response = a[0]['response']
     else:
+
         url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rome2rio_key, city_1, city_2)
         response = requests.get(url)
         response = response.json()
-        route_rome.insert({'city1': city1, 'city2': city2, 'response': response})
+        route_rome.insert({'city1': city_1, 'city2': city_2, 'response': response})
     price = 32768
     route_o = False
+
+
     try:
         data = response["routes"]
         for route in data:
@@ -146,6 +168,8 @@ def rome2rio(city_1, city_2, budget):
 def go_nearby(starting_city, flew_to, price, visited_cities, initial_route=[]):
     iata = getNearestAirport(starting_city.latitude, starting_city.longitude)
     scity = Geocoder.geocode(str(iata['lat']) + "," +  str(iata['lon'])).city
+    print iata
+    print scity
     if flew_to.city is None:
         flew_to.city = str(flew_to)
     if starting_city.city is None:
@@ -164,10 +188,10 @@ def go_nearby(starting_city, flew_to, price, visited_cities, initial_route=[]):
     prev_route = None
 
     while price > 0:
-        print "got next city"
+
         city, curr_country = getNextCity(present_city.latitude, present_city.longitude, present_city.country, visited_cities)
 
-        print city
+        print city, curr_country
 
         if city is None:
             return visited_in_city
@@ -177,7 +201,7 @@ def go_nearby(starting_city, flew_to, price, visited_cities, initial_route=[]):
         if route is False:
             continue
 
-        dest = Geocoder.geocode(city)
+        dest = Geocoder.geocode(city + ',' + curr_country)
 
         if dest.city is None:
             dest.city = city
@@ -306,7 +330,7 @@ def pick_cities(origin, price):
         count -= 1
 
         done_cities.append(city)
-        dest_city = Geocoder.geocode(city)
+        dest_city = Geocoder.geocode(city + "," + country)
         if dest_city.city is None:
             dest_city.city = city
         dest_aircode = getNearestAirport(dest_city.latitude,dest_city.longitude)['iata']

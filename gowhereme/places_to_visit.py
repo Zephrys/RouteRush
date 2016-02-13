@@ -56,11 +56,6 @@ def getDays(city,country, budget):
     days = 0
     number_of_places = len(places)
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> add multiple keys
     while True:
         if (budget - float(citycostson[country][city]["cost"])) < 0:
             break
@@ -118,15 +113,8 @@ def getNextCity(lat, lon, country, visited_cities, sameCountry=True):
 
 
 def rome2rio(city_1, city_2, budget):
-<<<<<<< HEAD
-<<<<<<< HEAD
     url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rkey(),city_1, city_2)
-=======
-    url = 'http://free.rome2rio.com/api/1.2/json/Search?key=670LizCP&oName=%s&dName=%s' % (city_1, city_2)
->>>>>>> production changes
-=======
     url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rome2rio_key, city_1, city_2)
->>>>>>> add multiple keys
     response = requests.get(url)
     price = 32768
     route_o = False
@@ -232,18 +220,7 @@ def authenticate():
     return ast.literal_eval(r.text)
 
 def get_rio(source, destination):
-<<<<<<< HEAD
-<<<<<<< HEAD
     url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rkey(),source, destination)
-
-=======
-    url = 'http://free.rome2rio.com/api/1.2/json/Search?key=670LizCP&oName=%s&dName=%s' % (source, destination)
-
->>>>>>> production changes
-=======
-    url = 'http://free.rome2rio.com/api/1.2/json/Search?key%s&oName=%s&dName=%s' % (rome2rio_key, source, destination)
-
->>>>>>> add multiple keys
     response = requests.get(url)
     response = response.json()
     price = 32768

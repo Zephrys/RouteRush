@@ -124,11 +124,12 @@ def rome2rio(city_1, city_2, budget):
     else:
         url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rome2rio_key, city_1, city_2)
         response = requests.get(url)
+        response = response.json()
         route_rome.insert({'city1': city1, 'city2': city2, 'response': response})
     price = 32768
     route_o = False
     try:
-        data = response.json()["routes"]
+        data = response["routes"]
         for route in data:
             if not (route.has_key("indicativePrice") and route["indicativePrice"].has_key("price")) and not ("bus" in route["name"].lower() or "train" in route["name"].lower() or "cab" in route["name"].lower() or "taxi" in route["name"] or  "ferry" in route["name"].lower()):
                 continue
@@ -289,7 +290,7 @@ def pick_cities(origin, price):
         country = random.choice(cities.keys())
         city = random.choice(cities[country].keys())
 
-        print city,
+        print city
 
         if country == origin_object.country or city in done_cities:
             continue

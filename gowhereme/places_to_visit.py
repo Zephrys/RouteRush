@@ -289,15 +289,19 @@ def pick_cities(origin, price):
     count = 10
     origin_object = Geocoder.geocode(origin)
     origin_aircode = getNearestAirport(origin_object.latitude, origin_object.longitude)
-    while count!= 0:
-        count -= 1
+    cities = json.loads(open('cities.json','r').read())
 
-        cities = json.loads(open('cities.json','r').read())
+    while count!= 0:
         country = random.choice(cities.keys())
         city = random.choice(cities[country].keys())
-    	print city
+
+        print city,
+
         if country == origin_object.country or city in done_cities:
             continue
+
+        count -= 1
+
         done_cities.append(city)
         dest_city = Geocoder.geocode(city)
         if dest_city.city is None:
@@ -308,8 +312,7 @@ def pick_cities(origin, price):
         except:
             continue
 
-
-
+        print fare
         if fare < 0.3 * price:
             return price - fare, city, route
     return price, False, False

@@ -305,7 +305,7 @@ def pick_cities(origin, price):
         try:
             fare, route = get_rio(Geocoder.geocode(origin_aircode['lat'] +","+ origin_aircode['lon']).city, dest_city.city)
         except:
-            continue
+            pass
 
         print fare
         if fare < 0.3 * price:

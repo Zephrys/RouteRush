@@ -162,14 +162,15 @@ def go_nearby(starting_city, flew_to, price, visited_cities, initial_route=[]):
                 'mode_of_transport': initial_route['name'], 'price_of_travel': initial_route['indicativePrice']['price'], 'return':False,'places': di, 'photo':photo})
     prev_route = None
     while price > 0:
-
-
         city, curr_country = getNextCity(present_city.latitude, present_city.longitude, present_city.country, visited_cities)
+
         if city is None:
             return visited_in_city
         route = rome2rio(present_city.city, city, price)
-    if route is False:
-        continue
+
+        if route is False:
+            continue
+
         dest = Geocoder.geocode(city)
         # at = authenticate()
         if dest.city is None:

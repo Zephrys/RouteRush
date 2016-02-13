@@ -122,7 +122,6 @@ def rome2rio(city_1, city_2, budget):
         print "found in mongo"
         response = a[0]['response']
     else:
-
         url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rome2rio_key, city_1, city_2)
         response = requests.get(url)
         response = response.json()
@@ -156,27 +155,34 @@ def go_nearby(starting_city, flew_to, price, visited_cities, initial_route=[]):
     visited_cities.append(starting_city.city)
     present_city = flew_to
     visited_in_city = []
+
     if starting_city != flew_to:
 
         (di, price,days, cost_per_day, photo) = getDays(flew_to.city, flew_to.country, price)
         visited_in_city.append({'days': range(days),'city': flew_to.city, 'country': flew_to.country,'duration_of_stay':days,'cost_per_day': cost_per_day,
                 'mode_of_transport': initial_route['name'], 'price_of_travel': initial_route['indicativePrice']['price'], 'return':False,'places': di, 'photo':photo})
     prev_route = None
+
     while price > 0:
+        print "got next city"
         city, curr_country = getNextCity(present_city.latitude, present_city.longitude, present_city.country, visited_cities)
+
+        print city
 
         if city is None:
             return visited_in_city
+
         route = rome2rio(present_city.city, city, price)
 
         if route is False:
             continue
 
         dest = Geocoder.geocode(city)
-        # at = authenticate()
+
         if dest.city is None:
             dest.city = city
-        airfare =0
+
+        airfare = 0
 
         route_return = None
         if dest.country != starting_city.country:

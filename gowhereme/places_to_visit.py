@@ -36,6 +36,8 @@ def getPhoto(reference):
 
 
 def getDays(city,country, budget):
+    city = city.split(",")[0]
+
     citycostson = json.loads(open('cities.json').read())
 
     citycostson = {k:{x.lower():y for x,y in v.items()} for k,v in citycostson.items()}

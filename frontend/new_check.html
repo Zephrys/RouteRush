@@ -3,7 +3,7 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
-    <title>Complex icons</title>
+    <title>Simple Polylines</title>
     <style>
       html, body {
         height: 100%;
@@ -19,27 +19,41 @@
     <div id="map"></div>
     <script>
 
-      // The following example creates complex markers to indicate beaches near
-      // Sydney, NSW, Australia. Note that the anchor is set to (0,32) to correspond
-      // to the base of the flagpole.
+      // This example creates a 2-pixel-wide red polyline showing the path of William
+      // Kingsford Smith's first trans-Pacific flight between Oakland, CA, and
+      // Brisbane, Australia.
 
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 10,
-          center: {lat: -33.9, lng: 151.2}
+          zoom: 3,
+          center: {lat: 0, lng: -180},
+          mapTypeId: google.maps.MapTypeId.TERRAIN
         });
 
+        var planCoordinates = [
+        // substitute lat long data from django here!
+          {lat: 37.772, lng: -122.214},
+          {lat: 21.291, lng: -157.821},
+          {lat: -18.142, lng: 178.431},
+          {lat: -27.467, lng: 153.027}
+        ];
+        var flightPath = new google.maps.Polyline({
+          path: planCoordinates,
+          geodesic: true,
+          strokeColor: '#0000FF',
+          strokeOpacity: 1.0,
+          strokeWeight: 3
+        });
+
+        flightPath.setMap(map);
         setMarkers(map);
       }
 
-      // Data for the markers consisting of a name, a LatLng and a zIndex for the
-      // order in which these markers should display on top of each other.
-      var beaches = [
-        ['Bondi Beach', -33.890542, 151.274856, 4],
-        ['Coogee Beach', -33.923036, 151.259052, 5],
-        ['Cronulla Beach', -34.028249, 151.157507, 3],
-        ['Manly Beach', -33.80010128657071, 151.28747820854187, 2],
-        ['Maroubra Beach', -33.950198, 151.259302, 1]
+      var toBeMarked = [
+        ['Bondi Beach', 37.772, -122.214, 4],
+        ['Coogee Beach', 21.291, -157.821, 1],
+        ['Cronulla Beach', -18.142, 178.431, 3],
+        ['Manly Beach', -27.467, 153.027, 2],
       ];
 
       function setMarkers(map) {
@@ -66,8 +80,8 @@
           coords: [1, 1, 1, 20, 18, 20, 18, 1],
           type: 'poly'
         };
-        for (var i = 0; i < beaches.length; i++) {
-          var beach = beaches[i];
+        for (var i = 0; i < toBeMarked.length; i++) {
+          var beach = toBeMarked[i];
           var marker = new google.maps.Marker({
             position: {lat: beach[1], lng: beach[2]},
             map: map,
@@ -76,8 +90,41 @@
             title: beach[0],
             zIndex: beach[3]
           });
+
+
+          var contentString = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
+            '<div id="bodyContent">'+
+            '<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
+            'sandstone rock formation in the southern part of the '+
+            'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
+            'south west of the nearest large town, Alice Springs; 450&#160;km '+
+            '(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
+            'features of the Uluru - Kata Tjuta National Park. Uluru is '+
+            'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
+            'Aboriginal people of the area. It has many springs, waterholes, '+
+            'rock caves and ancient paintings. Uluru is listed as a World '+
+            'Heritage Site.</p>'+
+            '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
+            'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
+            '(last visited June 22, 2009).</p>'+
+            '</div>'+
+            '</div>';
+
+        var infowindow = new google.maps.InfoWindow({
+          content: contentString
+        });
+
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+
+
         }
       }
+
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDRf5u6-zv-wMrqK3oMuTLPkuoIZOlij8k&callback=initMap">

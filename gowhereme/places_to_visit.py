@@ -19,15 +19,12 @@ gphotos = routerush.gphotos
 route_rome = routerush.rome2rio
 
 
-
-
-
 def getPhoto(reference):
-    url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s" % (reference,
+    url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=%s&key=%s" % (reference, goo_key())
 
-    x = gphotos.find({'reference':reference})
-    if x.count()!=0:
-        print ' ye bhi mongo mein'
+    x = gphotos.find({'reference': reference})
+    if x.count() != 0:
+        print 'found in mongo!'
         return x[0]['url']
 
     response = requests.get(url).url
@@ -203,9 +200,9 @@ def go_nearby(starting_city, flew_to, price, visited_cities, initial_route=[]):
 
         if route is False:
             visited_cities.append(city)
-	        continue
+            continue
 
-        print 'route toh hai bhai'
+        print 'Route Exists'
         dest = Geocoder(goo_key()).geocode(city + ',' + curr_country)
 
         if dest.city is None:

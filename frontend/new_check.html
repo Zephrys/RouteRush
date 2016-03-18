@@ -37,7 +37,7 @@
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
           zoom: 3,
-          center: {lat: 0, lng: -180},
+          center: {lat: {{lat_av}}, lng: {{ lon_av }}} ,
           mapTypeId: google.maps.MapTypeId.TERRAIN
         });
 
@@ -51,13 +51,10 @@
 
         var planCoordinates = [
         // substitute lat long data from django here!
-
+          {lat: {{origin_lat}}, lng: {{ origin_lon }}},
         {% for place in places_list %}
           {lat: {{ place.lat }}, lng: {{ place.lon }}},
         {% endfor %}
-          {lat: 21.291, lng: -157.821},
-          {lat: -18.142, lng: 178.431},
-          {lat: -27.467, lng: 153.027}
         ];
 
         var flightPath = new google.maps.Polyline({
@@ -80,10 +77,10 @@
       }
 
       var toBeMarked = [
-        ['Bondi Beach', 37.772, -122.214, 4],
-        ['Coogee Beach', 21.291, -157.821, 1],
-        ['Cronulla Beach', -18.142, 178.431, 3],
-        ['Manly Beach', -27.467, 153.027, 2],
+      ['{{ origin }}', {{ origin_lat }}, {{ origin_lon }}, 1],
+      {% for place in places_list %}
+        ['{{ place.city }}', {{ place.lat }}, {{ place.lon }}, {{ place.count }}],
+      {% endfor %}
       ];
 
       function setMarkers(map) {

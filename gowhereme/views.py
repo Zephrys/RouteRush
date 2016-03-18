@@ -13,7 +13,7 @@ from pprint import pprint
 from places_to_visit import places_to_visit, go_nearby, pick_cities
 
 from pygeocoder import Geocoder
-
+from pymongo import MongoClient
 
 def home(request):
     return render(request, "index.html", {})
@@ -58,8 +58,6 @@ def check(request):
         # call getDays on the first destination here
         response = None
         if first_dest is not False:
-
-
             location_flight = Geocoder.geocode(first_dest)[0]
             location = Geocoder.geocode(location)[0]
             response = go_nearby(location, location_flight, price, list_places, route)
@@ -75,25 +73,48 @@ def check(request):
 
         geo = routerush.geo
 
-        for place in list_places:
+        pprint(list_places)
+
+        i = 0
+        lat_sum = 0.0
+        lon_sum = 0.0
+
+        for i, place in enumerate(list_places[:-1]):
+
             city = place['city']
             a = geo.find({'city': city})
+            place['count'] = i + 2
 
             if a.count() > 1:
                 place['lat'] = a[0]['lat']
                 place['lon'] = a[0]['lon']
             else:
-                ob = Geocoder.decode(city)
+                ob = Geocoder.geocode(city)
                 geo.insert_one({'city': city, 'lat': ob.latitude, 'lon': ob.longitude })
                 place['lat'] = ob.latitude
                 place['lon'] = ob.longitude
 
+            lat_sum += place['lat']
+            lon_sum += place['lon']
+
+        lat_av = lat_sum/i
+        lon_av = lon_sum/i
+        print lat_av
+        print lon_av
+
         pprint(list_places)
-        return render(request, "check.html", {'places_list': list_places[:-1],
+
+        og = Geocoder.geocode(location.city)
+        return render(request, "new_check.html", {'places_list': list_places[:-1],
                                               'origin': location.city,
+                                              'origin_lat': og.latitude ,
+                                              'origin_lon': og.longitude,
                                               'second_city': list_places[0]['city'],
                                               'last_city': list_places[-2]['city'],
-                                              'return_fare': list_places[-1]})
+                                              'return_fare': list_places[-1],
+                                              'lat_av': lat_av,
+                                              'lon_av': lon_av,
+                                              })
     else:
         # HttpResponseRedirect('/')
         list_places = [{'city': u'Agra',

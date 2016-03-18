@@ -5,7 +5,7 @@ import json
 import random
 from datetime import datetime
 from geopy.distance import vincenty
-from api_keys import rio_key as rkey
+from api_keys import rio_key
 from api_keys import goo_key
 from pygeocoder import Geocoder
 from pymongo import MongoClient
@@ -301,8 +301,6 @@ def get_min_fare(source, destination, token):
     url = url % (source, destination, str(datetime.now().date()))
 
 
-
-    #
     res = requests.get(url, headers={ 'Authorization': 'Bearer ' + token})
 
     di = ast.literal_eval(res.text)
@@ -337,9 +335,15 @@ def pick_cities(origin, price):
             dest_city.city = city
         dest_aircode = getNearestAirport(dest_city.latitude,dest_city.longitude)['iata']
         try:
-            fare, route = get_rio(Geocoder(goo_key()).geocode(origin_aircode['lat'] +","+ origin_aircode['lon']).city, dest_city.city)
+            print "finding fare from"
+            origin_city = Geocoder(goo_key()).geocode(origin_aircode['lat'] +","+ origin_aircode['lon']).city
+            print origin_city
+            print dest_city.city
+            fare, route = get_rio(origin_city, dest_city.city)
         except:
-            pass
+            print origin_aircode
+            print "fails for " + city
+            continue
 
         print fare
         if fare < 0.3 * price:

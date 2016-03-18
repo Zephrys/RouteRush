@@ -61971,13 +61971,13 @@
     },
     {
         "iata": "BLR",
-        "lon": "77.70556",
+        "lon": "77.5667",
         "iso": "IN",
         "status": 1,
         "name": "Bengaluru International Airport",
         "continent": "AS",
         "type": "airport",
-        "lat": "13.198889",
+        "lat": "12.9667",
         "size": "large"
     },
     {

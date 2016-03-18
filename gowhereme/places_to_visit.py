@@ -301,8 +301,6 @@ def get_min_fare(source, destination, token):
     url = url % (source, destination, str(datetime.now().date()))
 
 
-
-    #
     res = requests.get(url, headers={ 'Authorization': 'Bearer ' + token})
 
     di = ast.literal_eval(res.text)

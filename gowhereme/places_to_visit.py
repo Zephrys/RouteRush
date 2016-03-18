@@ -335,8 +335,13 @@ def pick_cities(origin, price):
             dest_city.city = city
         dest_aircode = getNearestAirport(dest_city.latitude,dest_city.longitude)['iata']
         try:
-            fare, route = get_rio(Geocoder(goo_key()).geocode(origin_aircode['lat'] +","+ origin_aircode['lon']).city, dest_city.city)
+            print "finding fare from"
+            origin_city = Geocoder(goo_key()).geocode(origin_aircode['lat'] +","+ origin_aircode['lon']).city
+            print origin_city
+            print dest_city.city
+            fare, route = get_rio(origin_city, dest_city.city)
         except:
+            print origin_aircode
             print "fails for " + city
             continue
 

@@ -5,7 +5,7 @@ import json
 import random
 from datetime import datetime
 from geopy.distance import vincenty
-from api_keys import rio_key as rkey
+from api_keys import rio_key
 from api_keys import goo_key
 from pygeocoder import Geocoder
 from pymongo import MongoClient
@@ -338,7 +338,7 @@ def pick_cities(origin, price):
         dest_aircode = getNearestAirport(dest_city.latitude,dest_city.longitude)['iata']
         try:
             fare, route = get_rio(Geocoder(goo_key()).geocode(origin_aircode['lat'] +","+ origin_aircode['lon']).city, dest_city.city)
-        except:
+        except:n
             print "fails for " + city
             continue
 

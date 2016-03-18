@@ -339,7 +339,8 @@ def pick_cities(origin, price):
         try:
             fare, route = get_rio(Geocoder(goo_key()).geocode(origin_aircode['lat'] +","+ origin_aircode['lon']).city, dest_city.city)
         except:
-            pass
+            print "fails for " + city
+            continue
 
         print fare
         if fare < 0.3 * price:

@@ -63,10 +63,20 @@ def check(request):
             response = go_nearby(location, location_flight, price, list_places, route)
             list_places = response
         else:
+            old_location = location
+            while True:
+              location = Geocoder.geocode(location)[0]
+              response = go_nearby(location, location, price, list_places)
+              list_places = response
 
-            location = Geocoder.geocode(location)[0]
-            response = go_nearby(location, location, price, list_places)
-            list_places = response
+              try:
+                a = list_places[1]
+                break;
+              except:
+                location = old_location
+                list_places = []
+
+
 
         mongoclient = MongoClient('mongodb://localhost:27017/')
         routerush = mongoclient.routerush

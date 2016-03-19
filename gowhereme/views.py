@@ -7,7 +7,7 @@ import time
 import json
 from geopy.distance import vincenty
 from django.contrib import messages
-
+from api_keys import goo_key
 # from scripts.get_city import get_price_city
 from places_to_visit import places_to_visit, go_nearby, pick_cities
 
@@ -60,13 +60,13 @@ def check(request):
 
         while True:
             if first_dest is not False:
-                location_flight = Geocoder.geocode(first_dest)[0]
-                location = Geocoder.geocode(location)[0]
+                location_flight = Geocoder(goo_key()).geocode(first_dest)[0]
+                location = Geocoder(goo_key()).geocode(location)[0]
                 response = go_nearby(location, location_flight, price, list_places, route)
                 list_places = response
             else:
 
-                  location = Geocoder.geocode(location)[0]
+                  location = Geocoder(goo_key()).geocode(location)[0]
                   response = go_nearby(location, location, price, list_places)
                   list_places = response
 
@@ -100,7 +100,7 @@ def check(request):
                 place['lat'] = a[0]['lat']
                 place['lon'] = a[0]['lon']
             else:
-                ob = Geocoder.geocode(city)
+                ob = Geocoder(goo_key()).geocode(city)
                 geo.insert_one({'city': city, 'lat': ob.latitude, 'lon': ob.longitude })
                 place['lat'] = ob.latitude
                 place['lon'] = ob.longitude
@@ -115,11 +115,11 @@ def check(request):
 
         # pprint(list_places)
 
-        og = Geocoder.geocode(location.city)
+        og = Geocoder(goo_key()).geocode(location.city)
 
 
         from places_to_visit import getNearestAirport
-        sd = Geocoder.geocode(list_places[0]['city'])
+        sd = Geocoder(goo_key()).geocode(list_places[0]['city'])
         dst_iata = getNearestAirport(sd.latitude, sd.longitude)['iata']
         return render(request, "new_check.html", {'places_list': list_places[:-1],
                                               'origin': location.city,

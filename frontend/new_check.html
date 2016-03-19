@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>RouteRush!</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static "assets/css/materialize.min.css"%}" />
+    <link rel="stylesheet" href="{% static "assets/css/bootstrap.min.css"%}">
+    <script type="text/javascript" src="{% static "assets/js/jquery-2.2.0.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "assets/js/bootstrap.min.js"%}"></script>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+  </head>
+    <body style="font: Roboto; color: black; font-size: 24; background-color:#224683">
+   <header align="center" style="color: wheat;font: Roboto;font-size: 60px;">
+        <h3>RouteRush!</h3>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col s1 offset-s3"><h3>{{ origin }}</h3></div>
+                <div class="col s2 offset-s1"><i class="fa fa-plane"></i></div>
+                <div class="col s3 "><h3> {{ second_city }}</h3></div>
+            </div>
+        </div>
+    </header>
+    <div align="center">
+    <a href="http://www.skyscanner.co.in/transport/flights/blr/{{dst_iata}}" class="btn btn-info" align="center" role="button">Book Now!</a>
+    </div>
+
+    <div id="map"></div>
+    <script>
+
+      // This example creates a 2-pixel-wide red polyline showing the path of William
+      // Kingsford Smith's first trans-Pacific flight between Oakland, CA, and
+      // Brisbane, Australia.
+
+      function animatePlane(line) {
+        var count = 0;
+        window.setInterval(function() {
+          count = (count + 1) % 2000;
+
+          var icons = line.get('icons');
+          icons[0].offset = (count / 20) + '%';
+          line.set('icons', icons);
+        }, 20);
+      }
+
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 3,
+          center: {lat: {{lat_av}}, lng: {{ lon_av }}} ,
+          mapTypeId: google.maps.MapTypeId.TERRAIN
+        });
+
+        var planeSymbol = {
+          path: 'M362.985,430.724l-10.248,51.234l62.332,57.969l-3.293,26.145 l-71.345-23.599l-2.001,13.069l-2.057-13.529l-71.278,22.928l-5.762-23.984l64.097-59.271l-8.913-51.359l0.858-114.43 l-21.945-11.338l-189.358,88.76l-1.18-32.262l213.344-180.08l0.875-107.436l7.973-32.005l7.642-12.054l7.377-3.958l9.238,3.65 l6.367,14.925l7.369,30.363v106.375l211.592,182.082l-1.496,32.247l-188.479-90.61l-21.616,10.087l-0.094,115.684',
+          scale: 0.0333,
+          strokeOpacity: 1,
+          color: 'black',
+          strokeWeight: 1
+        };
+
+        var planCoordinates = [
+        // substitute lat long data from django here!
+          {lat: {{origin_lat}}, lng: {{ origin_lon }}},
+        {% for place in places_list %}
+          {lat: {{ place.lat }}, lng: {{ place.lon }}},
+        {% endfor %}
+        ];
+
+        var flightPath = new google.maps.Polyline({
+          path: planCoordinates,
+
+          icons: [{
+            icon: planeSymbol,
+            offset: '100%',
+          }],
+
+          geodesic: true,
+          strokeColor: '#0000FF',
+          strokeOpacity: 1.0,
+          strokeWeight: 3,
+        });
+
+        flightPath.setMap(map);
+        animatePlane(flightPath);
+        setMarkers(map);
+      }
+
+      var toBeMarked = [
+      ['{{ origin }}', {{ origin_lat }}, {{ origin_lon }}, 1],
+      {% for place in places_list %}
+        ['{{ place.city }}', {{ place.lat }}, {{ place.lon }}, {{ place.count }}],
+      {% endfor %}
+      ];
+
+      // keeps how to reach etc data
+      var cityData = [
+        {% for place in places_list %}
+          ['{{ place.city }}', '{{ place.country }}', '{{ place.cost_per_day }}', {{ place.duration_of_stay }}, {{ place.count }}, '{{ place.photo }}', {{place.price_of_travel}}, '{{place.mode_of_transport}}'],
+        {% endfor %}
+        ];
+
+      function setMarkers(map) {
+        // Adds markers to the map.
+
+        // Marker sizes are expressed as a Size of X,Y where the origin of the image
+        // (0,0) is located in the top left of the image.
+
+        // Origins, anchor positions and coordinates of the marker increase in the X
+        // direction to the right and in the Y direction down.
+        var image = {
+          url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+          // This marker is 20 pixels wide by 32 pixels high.
+          size: new google.maps.Size(20, 32),
+          // The origin for this image is (0, 0).
+          origin: new google.maps.Point(0, 0),
+          // The anchor for this image is the base of the flagpole at (0, 32).
+          anchor: new google.maps.Point(0, 32)
+        };
+        // Shapes define the clickable region of the icon. The type defines an HTML
+        // <area> element 'poly' which traces out a polygon as a series of X,Y points.
+        // The final coordinate closes the poly by connecting to the first coordinate.
+        var shape = {
+          coords: [1, 1, 1, 20, 18, 20, 18, 1],
+          type: 'poly'
+        };
+
+        infowindow = new google.maps.InfoWindow();
+        for (var i = 0; i < toBeMarked.length; i++) {
+          var beach = toBeMarked[i];
+          var marker = new google.maps.Marker({
+            position: {lat: beach[1], lng: beach[2]},
+            map: map,
+            icon: image,
+            shape: shape,
+            title: beach[0],
+            zIndex: beach[3]
+          });
+
+
+          if (i == 0) {
+            marker.contentString = '<div id="content">'+
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<h1 id="firstHeading" class="firstHeading">'+ 'Start here for the Thrill of your life!' + '</h1>'+
+            '</div>';
+
+          }
+          else {
+            console.log(cityData);
+
+            marker.contentString = '<div id="content">'+
+              '<div style="display:inline-block;">'+
+              '<img style="display:inline-block;" class="col s2 thumbnail" width="90" height="90" src="' + cityData[i-1][5] + '">' +
+              '<h2 style="display:inline-block;" id="firstHeading" class="col">'+ cityData[i - 1][0] + ', ' + cityData[i-1][1] + '</h2>'+
+              '</div>'+
+
+              '<div id="bodyContent">'+
+              '<div class="row"> <span class="col s5"> &nbsp;&nbsp; Days: ' + cityData[i-1][3] + '</span> <span>Money Spent To Get Here: $' + cityData[i -1][6]+'</span> <br><span class="col"> &nbsp;&nbsp;&nbsp;&nbsp;Cost Per Day $'+ cityData[i-1][2] +'</span> <span>&nbsp;&nbsp;Mode of Transport:' + cityData[i-1][7]+'</span></div>'+
+              '</div>'+
+              '</div>';
+          }
+
+        marker.addListener('click', function() {
+          infowindow.setContent(this.contentString);
+          infowindow.open(map, this);
+        });
+        }
+      }
+
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDRf5u6-zv-wMrqK3oMuTLPkuoIZOlij8k&callback=initMap">
+    </script>
+  </body>
+</html>

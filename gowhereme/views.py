@@ -7,7 +7,6 @@ import time
 import json
 from geopy.distance import vincenty
 from django.contrib import messages
-from pprint import pprint
 
 # from scripts.get_city import get_price_city
 from places_to_visit import places_to_visit, go_nearby, pick_cities
@@ -45,7 +44,7 @@ def check(request):
         except:
             price = 5000
 
-        print request.POST
+        # print request.POST
 
         price, first_dest, route = pick_cities(location, float(price))
         # what if this city isn't in our list??/
@@ -85,7 +84,7 @@ def check(request):
 
         geo = routerush.geo
 
-        pprint(list_places)
+        # pprint(list_places)
 
         i = 0
         lat_sum = 0.0
@@ -111,10 +110,10 @@ def check(request):
 
         lat_av = lat_sum/i
         lon_av = lon_sum/i
-        print lat_av
-        print lon_av
+        # print lat_av
+        # print lon_av
 
-        pprint(list_places)
+        # pprint(list_places)
 
         og = Geocoder.geocode(location.city)
 

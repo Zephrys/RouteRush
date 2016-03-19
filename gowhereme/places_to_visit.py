@@ -141,11 +141,12 @@ def rome2rio(city_1, city_2, budget):
         print "found in mongo 1"
         response = a[0]['response']
     else:
-
+        print "hello"
         url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rio_key(), city_1, city_2)
         response = requests.get(url)
         response = response.json()
         route_rome.insert({'city1': city_1, 'city2': city_2, 'response': response})
+
     price = 32768
     route_o = False
 
@@ -270,9 +271,11 @@ def get_rio(source, destination):
         print "found in mongo"
         response = a[0]['response']
     else:
+        print "finding for " + source + " and " + destination
         url = 'http://free.rome2rio.com/api/1.2/json/Search?key=%s&oName=%s&dName=%s' % (rio_key(), source, destination)
         response = requests.get(url)
         response = response.json()
+        print response
         route_rome.insert({'city1': source, 'city2': destination, 'response': response})
 
     price = 32768
@@ -340,6 +343,7 @@ def pick_cities(origin, price):
             print origin_city
             print dest_city.city
             fare, route = get_rio(origin_city, dest_city.city)
+            print "found fare " + origin_city
         except:
             print origin_aircode
             print "fails for " + city

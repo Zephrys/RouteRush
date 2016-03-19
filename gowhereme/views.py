@@ -57,22 +57,24 @@ def check(request):
 
         # call getDays on the first destination here
         response = None
-        if first_dest is not False:
-            location_flight = Geocoder.geocode(first_dest)[0]
-            location = Geocoder.geocode(location)[0]
-            response = go_nearby(location, location_flight, price, list_places, route)
-            list_places = response
-        else:
-            old_location = location
-            while True:
-              location = Geocoder.geocode(location)[0]
-              response = go_nearby(location, location, price, list_places)
-              list_places = response
+        old_location = location
 
-              try:
+        while True:
+            if first_dest is not False:
+                location_flight = Geocoder.geocode(first_dest)[0]
+                location = Geocoder.geocode(location)[0]
+                response = go_nearby(location, location_flight, price, list_places, route)
+                list_places = response
+            else:
+
+                  location = Geocoder.geocode(location)[0]
+                  response = go_nearby(location, location, price, list_places)
+                  list_places = response
+
+            try:
                 a = list_places[1]
-                break;
-              except:
+                break
+            except:
                 location = old_location
                 list_places = []
 
@@ -115,6 +117,11 @@ def check(request):
         pprint(list_places)
 
         og = Geocoder.geocode(location.city)
+
+
+        from places_to_visit import getNearestAirport
+        sd = Geocoder.geocode(list_places[0]['city'])
+        dst_iata = getNearestAirport(sd.latitude, sd.longitude)['iata']
         return render(request, "new_check.html", {'places_list': list_places[:-1],
                                               'origin': location.city,
                                               'origin_lat': og.latitude ,
@@ -124,6 +131,7 @@ def check(request):
                                               'return_fare': list_places[-1],
                                               'lat_av': lat_av,
                                               'lon_av': lon_av,
+                                              'dst_iata': dst_iata,
                                               })
     else:
         # HttpResponseRedirect('/')

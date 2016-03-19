@@ -20,7 +20,21 @@
       }
     </style>
   </head>
-  <body>
+    <body style="font: Roboto; color: black; font-size: 24; background-color:#224683">
+   <header align="center" style="color: wheat;font: Roboto;font-size: 60px;">
+        <h3>RouteRush!</h3>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col s1 offset-s3"><h3>{{ origin }}</h3></div>
+                <div class="col s2 offset-s1"><i class="fa fa-plane"></i></div>
+                <div class="col s3 "><h3> {{ second_city }}</h3></div>
+            </div>
+        </div>
+    </header>
+    <div align="center">
+    <a href="http://www.skyscanner.co.in/transport/flights/blr/{{dst_iata}}" class="btn btn-info" align="center" role="button">Book Now!</a>
+    </div>
+
     <div id="map"></div>
     <script>
 

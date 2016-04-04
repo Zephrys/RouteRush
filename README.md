@@ -1,4 +1,4 @@
-# RouteRust
+# RouteRush
 
 Generate randomized itineraries on the fly
 

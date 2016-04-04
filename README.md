@@ -2,8 +2,6 @@
 
 Generate randomized itineraries on the fly
 
-Give the web-app a shot at http://routerush.me
-
 ## Installation
 
 - `git clone https://github.com/Zephrys/Routerush`

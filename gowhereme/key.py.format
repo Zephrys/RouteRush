@@ -1,0 +1,15 @@
+import random
+
+key = 'Add production secret here'
+
+# Get rome2rio keys from https://free-dashboard.rome2rio.com/Account/Register
+rome_2_rio = # Add a list of rome2rio keys here
+
+def rio_key():
+    return random.choice(rome_2_rio)
+
+google = # Add a list of google maps and places keys here
+
+def goo_key():
+    return random.choice(google)
+

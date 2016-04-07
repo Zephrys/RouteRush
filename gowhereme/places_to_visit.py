@@ -1,12 +1,11 @@
 import requests
 import ast
-from key import sabre_api_key as sabre_key
 import json
 import random
 from datetime import datetime
 from geopy.distance import vincenty
-from api_keys import rio_key
-from api_keys import goo_key
+from key import sabre_api_key as sabre_key
+from key import *
 from pygeocoder import Geocoder
 from pymongo import MongoClient
 from unidecode import unidecode

@@ -105,7 +105,7 @@
       // keeps how to reach etc data
       var cityData = [
         {% for place in places_list %}
-          ['{{ place.city }}', '{{ place.country }}', '{{ place.cost_per_day }}', {{ place.duration_of_stay }}, {{ place.count }}, '{{ place.photo }}', {{place.price_of_travel}}, '{{place.mode_of_transport}}', 'place.places'],
+          ['{{ place.city }}', '{{ place.country }}', '{{ place.cost_per_day }}', {{ place.duration_of_stay }}, {{ place.count }}, '{{ place.photo }}', {{place.price_of_travel}}, '{{place.mode_of_transport}}', {{place.places}}],
         {% endfor %}
         ];
 

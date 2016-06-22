@@ -4,7 +4,7 @@ import json
 import random
 from datetime import datetime
 from geopy.distance import vincenty
-from key import sabre_api_key as sabre_key
+
 from key import *
 from pygeocoder import Geocoder
 from pymongo import MongoClient

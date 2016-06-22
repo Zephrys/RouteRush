@@ -7,7 +7,8 @@ import time
 import json
 from geopy.distance import vincenty
 from django.contrib import messages
-from api_keys import goo_key
+
+from key import *
 # from scripts.get_city import get_price_city
 from places_to_visit import places_to_visit, go_nearby, pick_cities
 

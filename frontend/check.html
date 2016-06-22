@@ -56,6 +56,9 @@ background: linear-gradient(to left, #02AAB0 , #00CDAC); /* W3C, IE 10+/ Edge, F
                                   <span class="col s5">Days: {{ place.duration_of_stay }}</span>
                                   <span class="col s5">Money Spent To Get Here: ${{ place.price_of_travel}}</span>
                                   <span class="col s4">Cost Per Day ${{place.cost_per_day}}</span>
+                                  {% for attraction in place.places %}
+                                  <span class="col s4">{{attraction}}</span>
+                                  {% endfor %}
                               </div>
                           </div>
 
